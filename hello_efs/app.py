@@ -1,10 +1,16 @@
 import json
 from pathlib import Path
+import networkx as nx
 
 # You can reference EFS files by including your local mount path, and then
 # treat them like any other file. Local invokes may not work with this, however,
 # as the file/folders may not be present in the container.
 FILE = Path("/mnt/lambda/file")
+
+def create_plan(input_graph_data):
+    G = nx.Graph() #create empty grpah
+    G.add_nodes_from([(str(key), input_graph_data[key]) for key in input_graph_data if key != 'adjs']) #add nodes from the rooms dictionary
+    G.add_edges_from(input_graph_data['adjs'])
 
 def lambda_handler(event, context):
     wrote_file = False

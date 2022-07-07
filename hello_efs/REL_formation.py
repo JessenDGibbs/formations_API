@@ -1,4 +1,6 @@
 #REL Formation
+import networkx as nx
+from FourCompletion import four_G
 
 ## Functions
 

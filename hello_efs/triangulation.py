@@ -1,3 +1,8 @@
+import random 
+import networkx as nx
+import matplotlib.pyplot as plt
+import time
+import numpy as np 
 class TriangulationNotSuccessfulException(Exception):
 	'''
 	Custom error type that gets thrown

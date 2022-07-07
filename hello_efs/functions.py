@@ -1,4 +1,9 @@
 #Functions
+import networkx as nx
+from os import remove
+import numpy as np
+import random
+import itertools
 
 def findsubsets(s, n):
     return list(itertools.combinations(s, n))
@@ -62,9 +67,7 @@ def sort_by_degree(G, aList):
       new_list.insert(index, node)
   return new_list
 
-from os import remove
-import numpy as np
-import networkx as nx
+
 
 
 def is_Edge_Biconnected(nxgraph):
@@ -501,9 +504,9 @@ def get_points_from_path(path):
   return points
 
 def find_all_path(OG, start, end, path, all_paths):
-  #G = OG.copy()
+  G = OG.copy()
   _, outer_boundary, _, _ = find_inner_outer(G)
-  outer_boundary = createPath(sorted(outer_Boundary), [])
+  outer_boundary = createPath(sorted(outer_boundary), [])
   path.append(start)
   #print("start:", start, " end:", end, " path:", path, " bool:",(start==end))
   if start == end:

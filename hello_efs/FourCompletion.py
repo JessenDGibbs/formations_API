@@ -2,6 +2,7 @@
 import networkx as nx
 from functions import *
 from transform import PTP_G
+from test_input import G
 
 _, outer_Boundary, _, _ = find_inner_outer(PTP_G)
 print("outer boundary:", outer_Boundary)

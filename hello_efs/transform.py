@@ -2,6 +2,7 @@
 import networkx as nx
 from triang_ST_cip import new_G
 from triang_ST_cip import added_edges_triang
+from biconnect import added_edges_bicon
 from functions import *
 
 
