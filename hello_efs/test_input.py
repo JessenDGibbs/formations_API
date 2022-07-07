@@ -76,5 +76,5 @@ G.add_edges_from(test_input_graph_data['adjs']) # add edges from the adjacencies
 pos = {"1":[-1,1], "2":[-2,0], "3":[0,0], "4":[-1,0.5], "5":[1,0], "6":[1,-1], "7":[0.5, -2], 
        "8":[1.5,-2], "9":[-1,0], "10": [1.5,-1], "11": [0.5,-0.5], "12": [0.2,0.5],
        "13": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-nx.draw(G, pos, with_labels=True)
-#nx.draw(G, with_labels=True)
+#nx.draw(G, pos, with_labels=True)
+##nx.draw(G, with_labels=True)

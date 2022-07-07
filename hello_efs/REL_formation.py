@@ -127,7 +127,7 @@ def contract(OG, contractions, good_vertices):
 pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
        "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
        "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
-nx.draw(four_G, pos, with_labels=True)
+#nx.draw(four_G, pos, with_labels=True)
 
 four_G.has_edge('3', '8')
 
@@ -153,7 +153,7 @@ while v != -1:
 pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
        "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
        "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
-nx.draw(contracted_G, pos, with_labels=True)
+#nx.draw(contracted_G, pos, with_labels=True)
 
 ##Trivial REL
 
@@ -201,7 +201,7 @@ pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "
        "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
        "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
 colors = [edge_type_color_dict[trivial_REL_G [u][v]['t']] for u,v in trivial_REL_G .edges]
-nx.draw(trivial_REL_G, pos, edge_color=colors, with_labels=True)
+#nx.draw(trivial_REL_G, pos, edge_color=colors, with_labels=True)
 
 list_contraction
 
@@ -209,7 +209,7 @@ pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "
        "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
        "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
 colors = [edge_type_color_dict[trivial_REL_G [u][v]['t']] for u,v in trivial_REL_G .edges]
-nx.draw(trivial_REL_G, pos, edge_color=colors, with_labels=True)
+#nx.draw(trivial_REL_G, pos, edge_color=colors, with_labels=True)
 
 ## Functions for expansion
 
@@ -609,7 +609,7 @@ pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "
        "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
        "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
 colors = [edge_type_color_dict[trivial_REL_G [u][v]['t']] for u,v in trivial_REL_G .edges]
-nx.draw(trivial_REL_G, pos, edge_color=colors, with_labels=True)
+#nx.draw(trivial_REL_G, pos, edge_color=colors, with_labels=True)
 
 #{'v': '3', 'u': '14', 'y_z': ['n', 's'], 'v_nbr': ['14', 'e', 's', 'n']}
 

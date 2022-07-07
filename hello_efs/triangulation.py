@@ -111,26 +111,7 @@ class TriangulationAlgorithm:
 		
 		#logging.debug ("chordedge candidates: "+str(self.chordedge_candidates))
 
-	def draw_triangulation(self):
-		edges_original = self.G.edges()
 
-		#pos = nx.shell_layout(self.G)
-		pos = nx.kamada_kawai_layout(self.G)
-		
-		if not self.H == None:
-			nx.draw_networkx_nodes(self.H, pos, node_color='r', node_size=50)
-			nx.draw_networkx_edges(self.H, pos, edgelist=edges_original, width=1, edge_color='black')
-			nx.draw_networkx_edges(self.H, pos, edgelist=self.edges_of_triangulation, width=1, edge_color='blue')
-		else:
-			nx.draw_networkx_nodes(self.G, pos, node_color='r', node_size=50)
-			nx.draw_networkx_edges(self.G, pos, edgelist=self.G.edges(), width=1, edge_color='black')
-
-		labels = {}
-		for n in self.G.nodes():
-			labels[n] = n
-		nx.draw_networkx_labels(self.G, pos, labels, font_size=16)
-		plt.axis('off')
-		plt.show()
 
 class Algorithm_MCSM(TriangulationAlgorithm):
 	'''

@@ -6,7 +6,7 @@ pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "
        "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
        "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
 colors = [edge_type_color_dict[REL_G[u][v]['t']] for u,v in REL_G.edges]
-nx.draw(REL_G, pos, edge_color=colors, with_labels=True)
+#nx.draw(REL_G, pos, edge_color=colors, with_labels=True)
 
 is_planar, _ = nx.check_planarity(REL_G, counterexample=False)
 #print(is_planar)
@@ -67,7 +67,7 @@ posT1 = {"1":[-0.8,0.7], "2":[1.4,0.4], "3":[2.4,0], "4":[1,1], "5":[1.4,-0.5], 
        "8":[-1.9,-1], "9":[0,0.9], "10": [-0.7,-1.7], "11": [0.6,-1.2], "12": [-2.9,0],
        "13": [0.5,0], "14": [0.1,-0.7], "n": [0.2,2],"e": [3,0],"s": [0.2,-3],"w": [-4,0]}
 colors = [edge_type_color_dict[T1[u][v]['t']] for u,v in T1.edges]
-nx.draw(T1, posT1, edge_color=colors, with_labels=True)
+#nx.draw(T1, posT1, edge_color=colors, with_labels=True)
 
 get_t_neighbors(REL_G, T1, '3', t=1)
 
@@ -94,7 +94,7 @@ posT2 = {"1":[-0.8,0.7], "2":[1.4,0.4], "3":[2.4,0], "4":[1,1], "5":[1.4,-0.5], 
        "8":[-1.9,-1], "9":[0,0.9], "10": [-0.7,-1.7], "11": [0.6,-1.2], "12": [-2.9,0],
        "13": [0.5,-0.2], "14": [0.1,-0.7], "n": [0.2,2],"e": [3,0],"s": [0.2,-3],"w": [-4,0]}
 colors = [edge_type_color_dict[T2[u][v]['t']] for u,v in T2.edges]
-nx.draw(T2, posT2, edge_color=colors, with_labels=True)
+#nx.draw(T2, posT2, edge_color=colors, with_labels=True)
 
 get_t_neighbors(REL_G, T2, 'n', t=2)
 
@@ -197,7 +197,7 @@ posT1 = {"1":[-0.8,0.7], "2":[1.4,0.4], "3":[2.4,0], "4":[1,1], "5":[1.4,-0.5], 
        "8":[-1.9,-1], "9":[0,0.9], "10": [-0.7,-1.7], "11": [0.6,-1.2], "12": [-2.9,0],
        "13": [0.5,0], "14": [0.1,-0.7], "n": [0.2,2],"e": [3,0],"s": [0.2,-3],"w": [-4,0]}
 colors = [edge_type_color_dict[T1[u][v]['t']] for u,v in T1.edges]
-nx.draw(T1, posT1, edge_color=colors, with_labels=True)
+#nx.draw(T1, posT1, edge_color=colors, with_labels=True)
 
 T1_faces
 
@@ -236,7 +236,7 @@ dict_rel["T2"][edge[0]][edge[1]]["top"] = dict_rel["T2"]['w']['s']["bot"]
 dict_rel["T2"][edge[0]][edge[1]]["bot"] = dict_rel["T2"]['w']['n']["top"]
 
 colors = [edge_type_color_dict[T2[u][v]['t']] for u,v in T2.edges]
-nx.draw(T2, posT2, edge_color=colors, with_labels=True)
+#nx.draw(T2, posT2, edge_color=colors, with_labels=True)
 
 get_t_neighbors(REL_G, T2, 'e', t=2)
 
@@ -288,7 +288,7 @@ def set_card_node_face(REL_dict, T1_T2):
 set_node_face(dict_rel, [T1,T2])
 
 colors = [edge_type_color_dict[T1[u][v]['t']] for u,v in T1.edges]
-nx.draw(T1, posT1, edge_color=colors, with_labels=True)
+#nx.draw(T1, posT1, edge_color=colors, with_labels=True)
 
 #print(dict_rel["T1"]["8"]["left"],dict_rel["T1"]["8"]["right"])
 
@@ -296,7 +296,7 @@ nx.draw(T1, posT1, edge_color=colors, with_labels=True)
 #print(dict_rel["T1"]["e"]["left"],dict_rel["T1"]["e"]["right"])
 
 colors = [edge_type_color_dict[T2[u][v]['t']] for u,v in T2.edges]
-nx.draw(T2, posT2, edge_color=colors, with_labels=True)
+#nx.draw(T2, posT2, edge_color=colors, with_labels=True)
 
 #print(dict_rel["T2"]["8"]["top"],dict_rel["T2"]["8"]["bot"])
 
@@ -351,7 +351,7 @@ while i < len(T2_faces) - 1:
       i += 1
 
 colors = [edge_type_color_dict[T2[u][v]['t']] for u,v in T2.edges]
-nx.draw(T2, posT2, edge_color=colors, with_labels=True)
+#nx.draw(T2, posT2, edge_color=colors, with_labels=True)
 
 faces
 
@@ -384,11 +384,11 @@ def create_face_graph(T_graph, REL_dict, face_dict, T="T1"):
 G1 = create_face_graph(T1, dict_rel, faces,T="T1")
 
 posG1 = {0:[0, -3], 1:[0,-1.5], 2:[-0.8,-0.1], 3:[0,-0.6], 4:[0, 0.2], 5:[-1, 1.5], 6:[1, 1.5],7: [0.5, 0],8: [1,0.5],9: [2.5, 0.5], 10:[1,2.5], 11:[-2.2,2.5]}
-nx.draw(G1, nx.planar_layout(G1),  with_labels=True)
+#nx.draw(G1, nx.planar_layout(G1),  with_labels=True)
 
 G2 = create_face_graph(T2, dict_rel, faces,T="T2")
 
-nx.draw(G2, nx.planar_layout(G2),  with_labels=True)
+#nx.draw(G2, nx.planar_layout(G2),  with_labels=True)
 
 # Calculate coordinates
 

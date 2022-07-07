@@ -15,7 +15,7 @@ added_edges_triang
 pos = {"1":[-2,0], "2":[-1,0.5], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
        "8":[0.5,-2], "9":[-1,0], "10": [1.5,-1], "11": [0.5,-0.5], "12": [0.2,0.5],
        "13": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-nx.draw(triang_G, pos, with_labels=True)
+#nx.draw(triang_G, pos, with_labels=True)
 
 is_planar, embedding = nx.check_planarity(triang_G, counterexample=False)
 #print(is_planar)
@@ -186,7 +186,7 @@ detect_ST(triang_G)
 pos = {"1":[-2,0], "2":[-1,0.5], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
        "8":[0.5,-2], "9":[-1,0], "10": [1.5,-1], "11": [0.5,-0.5], "12": [0.2,0.5],
        "13": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-nx.draw(triang_G, pos, with_labels=True)
+#nx.draw(triang_G, pos, with_labels=True)
 
 list(triang_G.neighbors("2"))
 
@@ -233,7 +233,7 @@ while has_ST(noST_G) == True:
 pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
        "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [0.2,0.5],
        "13": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-nx.draw(noST_G, pos, with_labels=True)
+#nx.draw(noST_G, pos, with_labels=True)
 
 is_planar, embedding = nx.check_planarity(noST_G, counterexample=False)
 #print(is_planar)
@@ -255,7 +255,7 @@ while len(cip) > 4:
 pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
        "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [0.2,0.5],
        "13": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-nx.draw(new_G, pos, with_labels=True)
+#nx.draw(new_G, pos, with_labels=True)
 
 is_planar, _ = nx.check_planarity(new_G, counterexample=False)
 #print(is_planar)

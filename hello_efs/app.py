@@ -374,4 +374,4 @@ def lambda_handler(event, context):
         }),
     }
 
-#fn, numpy_image = create_plan(test_input)
+fn, numpy_image = create_plan(test_input)
