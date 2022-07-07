@@ -1,5 +1,6 @@
 from functions import *
 import networkx as nx
+from test_input import G
 
 #Algorithm 1: Biconnect
 
