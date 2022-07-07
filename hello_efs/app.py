@@ -26,6 +26,7 @@ def lambda_handler(event, context):
             "file_contents": contents,
             "created_file": wrote_file,
             "Release": 1.0,
-            "userData": event["queryStringParameters"]
+            "userData": event["queryStringParameters"],
+            "test": "hi"
         }),
     }
