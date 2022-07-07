@@ -67,9 +67,6 @@ def sort_by_degree(G, aList):
       new_list.insert(index, node)
   return new_list
 
-
-
-
 def is_Edge_Biconnected(nxgraph):
     """returns a boolean representing whether the graph
      is edge biconnected or not.
@@ -309,48 +306,6 @@ def valid_base(OG, base):
   G = OG.copy()
   return base == remove_edge_with_different_count(G, base)
 
-def findST(OG):
-  G = OG.copy()
-  allTriangles, _  = find_all_triangles(G)
-  #print('all:', allTriangles)
-  # return the four face of a triangular pyramid
-  four_points_subset = findsubsets(list(G.nodes), 4)
-  for four in four_points_subset:
-    pyramid = []
-    pyramid_found = True
-    for triangle in findsubsets(four, 3):
-      pyramid.append(triangle)
-      if isElementaryCycle(triangle, allTriangles) == False:
-        pyramid_found = False
-        break
-    if pyramid_found == True:
-      print("part of a ST:",four)
-      return [four, pyramid]
-  return []
-
-def removeST(OG, pyramid):
-  G = OG.copy()
-  #remove base connected to other triangles outside the pyramid
-  possible_bases = [b for b in pyramid[1] if valid_base(G, b) == True]
-  print("possible bases:", possible_bases)
-  base = random.choice(possible_bases)
-  #base = [2,3, 4] to replicate
-  print("base:", base)
-  #print(remove_edge_with_different_count(OG, base))
-  #print("valid:",valid_base(G, base))
-  a, b, top = base #random.sample(base, 3)
-  if G.has_edge(a,b): G.remove_edge(a,b) 
-  else: G.remove_edge(b,a)
-  print("removed:",(a,b))
-  d = str(G.number_of_nodes() + 1)
-  G.add_edge(a, d)
-  print("add:",(a,d))
-  G.add_edge(b, d)
-  print("add:",(b,d))
-  G.add_edge(top, d)
-  print("add:",(top,d))
-  return G
-
 # check if graph has a ST based on p.5 paper
 def has_ST(OG):
   G = OG.copy()
@@ -447,7 +402,7 @@ def remove_shortcut(OG, short_cut):
   print("add:",(a,d))
   G.add_edge(b, d)
   print("add:",(b,d))
-  return G
+  return G, [d, (a,b)]
 
 def transform(OG, edge):
   G = OG.copy()

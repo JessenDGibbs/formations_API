@@ -1,7 +1,7 @@
 # Load Data
 import networkx as nx
 
-input_graph_data = {
+test_input_graph_data = {
     "1": {
         "min_width":5,
         "max_width":10,
@@ -69,8 +69,8 @@ input_graph_data = {
 
 #Create graph
 G = nx.Graph() #create empty grpah
-G.add_nodes_from([(str(key), input_graph_data[key]) for key in input_graph_data if key != 'adjs']) #add nodes from the rooms dictionary
-G.add_edges_from(input_graph_data['adjs']) # add edges from the adjacencies lsit
+G.add_nodes_from([(str(key), test_input_graph_data[key]) for key in input_graph_data if key != 'adjs']) #add nodes from the rooms dictionary
+G.add_edges_from(test_input_graph_data['adjs']) # add edges from the adjacencies lsit
 
 #Draw graph
 pos = {"1":[-1,1], "2":[-2,0], "3":[0,0], "4":[-1,0.5], "5":[1,0], "6":[1,-1], "7":[0.5, -2], 
