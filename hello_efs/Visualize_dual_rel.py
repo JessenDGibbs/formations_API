@@ -147,20 +147,20 @@ for room in list(REL_G.nodes):
 
   
   if room not in exterior_nodes: #and room in list(G.nodes):
-    #print(room)
+    ##print(room)
     x_left,x_right = dict_rel['T1'][room]['x_left'], dict_rel['T1'][room]['x_right']
     y_high,y_low = dict_rel['T2'][room]['y_top'], dict_rel['T2'][room]['y_bot']
     #x_left,x_right = dict_rel['T2'][room]['y_top'], dict_rel['T2'][room]['y_bot']
     #y_high,y_low = dict_rel['T1'][room]['x_left'], dict_rel['T1'][room]['x_right']
 
-    print(room, (x_left,x_right), (y_high,y_low), color)
+    #print(room, (x_left,x_right), (y_high,y_low), color)
     cv2.rectangle(blank_image, (x_left,y_high), (x_right,y_low), color,-1)
     w, h = x_right - x_left, y_high - y_low
     coords = [(x_left,y_low), (x_right,y_low), (x_right,y_high), (x_left,y_high)]
-    #print(coords)
+    ##print(coords)
     room_list.append(coords)
     #cv2.rectangle(blank_image,(1,1),(4,4),(0,0,0),2)
-    #print(room, (x_left,y_low),(x_left+w,y_low+h))
+    ##print(room, (x_left,y_low),(x_left+w,y_low+h))
     #break
 
 
@@ -188,7 +188,7 @@ fig, axs = plt.subplots()
 axs.set_aspect('equal', 'datalim')
 
 for key,geom in your_dict.items(): 
-  #print(key)
+  ##print(key)
   #node_to_remove = [n for n in list(REL_G.nodes) if n not in list(G.nodes) and n not in added_nodes_ST_clean]
   #if str(key+1) not in node_to_remove:
   xs, ys = geom.exterior.xy
@@ -201,9 +201,9 @@ for key,geom in your_dict.items():
   color = dict_room_color[str(key)] 
   c = (color - np.min(color))/np.ptp(color)
   if key == 'extra': c = [0.8,0.8,0.8]
-  #print(color, c) 
+  ##print(color, c) 
   axs.fill(xs, ys, alpha=0.5, fc=list(c), ec='black')
-  #print(xs, ys)
+  ##print(xs, ys)
   axs.text(xs[0]+0.1, ys[0]+0.1, key_name ,fontsize='medium', va='bottom', fontfamily='serif')
 
 plt.show()

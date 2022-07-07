@@ -9,13 +9,13 @@ colors = [edge_type_color_dict[REL_G[u][v]['t']] for u,v in REL_G.edges]
 nx.draw(REL_G, pos, edge_color=colors, with_labels=True)
 
 is_planar, _ = nx.check_planarity(REL_G, counterexample=False)
-print(is_planar)
+#print(is_planar)
 
 ## Functions
 
 def get_t_neighbors(G, T, centre, t=0):
   ordered_neighbours = order_neighbours(G, centre, clockwise=True)
-  print("FOUND ORDERED NEIGH", ordered_neighbours )
+  #print("FOUND ORDERED NEIGH", ordered_neighbours )
 
   ordered_neighbours_t = []
   if t==1 and centre=="n":
@@ -132,7 +132,7 @@ update_cw_ccw(dict_rel)
 #dict_rel
 
 def next_face_half_edge(G, v, w):
-  #print("cur(w):", w, "prev(v):",v)
+  ##print("cur(w):", w, "prev(v):",v)
   new_node = G[w][v]["ccw"]
   return w, new_node
 
@@ -145,7 +145,7 @@ def traverse_face(G, v, w, mark_half_edges=None):
   prev_node = v
   cur_node = w
   # Last half-edge is (incoming_node, v)
-  #print(v,w)
+  ##print(v,w)
   incoming_node = G[v][w]["cw"] 
   
 
@@ -170,19 +170,19 @@ dict_rel["T1"]['s']['w']["left"] = f
 dict_rel["T1"]['w']['n']["left"] = f
 T1_faces.append(list(set(f)))
 for e in list(T1.edges):
-  #print(e)
+  ##print(e)
   f = traverse_face(dict_rel["T1"], e[0], e[1])
-  print(e, "face", f)
-  #print(e, f)
+  #print(e, "face", f)
+  ##print(e, f)
   final_face = contains_face(f,T1_faces)
-  #print(f, final_face)
+  ##print(f, final_face)
   for j in range(len(final_face)):
     k = (j+1) % len(final_face)
     h = (j-1) % len(final_face)
     e_right = [final_face[j], final_face[k]]
     e_left = [final_face[j], final_face[h]]
     #if T1.has_edge()
-    print(e_right)
+    #print(e_right)
     dict_rel["T1"][e_right[0]][e_right[1]]["right"] = final_face
     dict_rel["T1"][e_left[0]][e_left[1]]["left"] = final_face
 
@@ -207,9 +207,9 @@ sorted(T1_faces)
 
 len(T1_faces)
 
-print(len(T1_faces))
+#print(len(T1_faces))
 # + 1 to ad sn or we edge
-print(len(list(T1.edges)) + 1 - len(list(T1.nodes)) + 2)
+#print(len(list(T1.edges)) + 1 - len(list(T1.nodes)) + 2)
 
 T2_faces = []
 f = traverse_face(dict_rel["T2"], 'w', 'e')
@@ -218,7 +218,7 @@ dict_rel["T2"]['n']['e']["top"] = f
 T2_faces.append(list(set(f)))
 for e in list(T2.edges):
   f = traverse_face(dict_rel["T2"], e[0], e[1])
-  print(e, f)
+  #print(e, f)
   final_face = contains_face(f,T2_faces)
   for j in range(len(final_face)):
     k = (j+1) % len(final_face)
@@ -242,23 +242,16 @@ get_t_neighbors(REL_G, T2, 'e', t=2)
 
 traverse_face(dict_rel["T2"], 's', 'e')
 
-print(len(T2_faces))
+#print(len(T2_faces))
 # + 1 to ad sn or we edge
-print(len(list(T2.edges)) + 1 - len(list(T2.nodes)) + 2)
+#print(len(list(T2.edges)) + 1 - len(list(T2.nodes)) + 2)
 
 
 
-for e in list(T2.edges) + [('w', 'e')] :
-  print(e)
-  print("top:", dict_rel["T2"][e[0]][e[1]]["top"])
-  print("bot:",dict_rel["T2"][e[0]][e[1]]["bot"])
-  print()
 
 
-for e in list(T1.edges) + [('s', 'n')]:
-  print(e, "right:", dict_rel["T1"][e[0]][e[1]]["right"])
-  print(e, "left:",dict_rel["T1"][e[0]][e[1]]["left"])
-  print()
+
+
 
 def set_node_face(REL_dict, T1_T2):
   for T in REL_dict:
@@ -273,7 +266,7 @@ def set_node_face(REL_dict, T1_T2):
           prev = neighbors[h]
           #find first outgoing neigh, prev as to be incoming
           if G.has_edge(node, neigh) and G.has_edge(prev, node):
-            #if node == "8" or node == "5": print("first out ", T, (node, neigh), dir[0])
+            #if node == "8" or node == "5": #print("first out ", T, (node, neigh), dir[0])
             REL_dict[T][node][dir[0]] = dict_rel[T][node][neigh][dir[0]]
             found = False
             # find next incoming
@@ -282,7 +275,7 @@ def set_node_face(REL_dict, T1_T2):
                 k = (i + j) % len(neighbors)
                 neigh = neighbors[k]
                 if G.has_edge(neigh, node):
-                  #if node == "8" or node == "5": print("next in ", T,(neigh,node), dir[1])
+                  #if node == "8" or node == "5": #print("next in ", T,(neigh,node), dir[1])
                   REL_dict[T][node][dir[1]] = dict_rel[T][neigh][node][dir[1]]
                   break
               found = True
@@ -297,18 +290,18 @@ set_node_face(dict_rel, [T1,T2])
 colors = [edge_type_color_dict[T1[u][v]['t']] for u,v in T1.edges]
 nx.draw(T1, posT1, edge_color=colors, with_labels=True)
 
-print(dict_rel["T1"]["8"]["left"],dict_rel["T1"]["8"]["right"])
+#print(dict_rel["T1"]["8"]["left"],dict_rel["T1"]["8"]["right"])
 
-print(dict_rel["T1"]["w"]["left"],dict_rel["T1"]["w"]["right"])
-print(dict_rel["T1"]["e"]["left"],dict_rel["T1"]["e"]["right"])
+#print(dict_rel["T1"]["w"]["left"],dict_rel["T1"]["w"]["right"])
+#print(dict_rel["T1"]["e"]["left"],dict_rel["T1"]["e"]["right"])
 
 colors = [edge_type_color_dict[T2[u][v]['t']] for u,v in T2.edges]
 nx.draw(T2, posT2, edge_color=colors, with_labels=True)
 
-print(dict_rel["T2"]["8"]["top"],dict_rel["T2"]["8"]["bot"])
+#print(dict_rel["T2"]["8"]["top"],dict_rel["T2"]["8"]["bot"])
 
-print(dict_rel["T2"]["s"]["top"],dict_rel["T2"]["s"]["bot"])
-print(dict_rel["T2"]["n"]["top"],dict_rel["T2"]["n"]["bot"])
+#print(dict_rel["T2"]["s"]["top"],dict_rel["T2"]["s"]["bot"])
+#print(dict_rel["T2"]["n"]["top"],dict_rel["T2"]["n"]["bot"])
 
 #Set faces graph
 
@@ -321,7 +314,7 @@ faces = {"T1":{}, "T2":{}}
 i = 1
 while i < len(T1_faces) - 1:
   for face in sorted(T1_faces, key=len):
-    #print(i)
+    ##print(i)
     if len(face) == 3 and 'w' in face:
       faces["T1"][tuple(face)] = 0
       faces["T1"][0] = tuple(face)
@@ -331,7 +324,7 @@ while i < len(T1_faces) - 1:
     else:
       #inter = set(list(faces["T1"].keys())[list(faces["T1"].values()).index(i-1)]).intersection(set(face))
       #if len(inter) >= 2 and tuple(face) not in faces["T1"]:
-        #print(face, faces["T1"][i-1])
+        ##print(face, faces["T1"][i-1])
       faces["T1"][tuple(face)] = i
       faces["T1"][i] = tuple(face)
       i += 1
@@ -341,7 +334,7 @@ i = 1
 while i < len(T2_faces) - 1:
   if i == 6: break
   for face in sorted(T2_faces, key=len):
-    #print(i)
+    ##print(i)
     if len(face) == 3 and 's' in face:
       faces["T2"][tuple(face)] = 0
       faces["T2"][0] = tuple(face)
@@ -350,9 +343,9 @@ while i < len(T2_faces) - 1:
       faces["T2"][len(T2_faces) - 1] = tuple(face)
     else:
       #inter = set(list(faces["T2"].keys())[list(faces["T2"].values()).index(i-1)]).intersection(set(face))
-      #if len(inter) >= 2: print(face, faces["T2"][i-1])
+      #if len(inter) >= 2: #print(face, faces["T2"][i-1])
       #if len(inter) >= 2 and tuple(face) not in faces["T2"]:
-        #print(face, faces["T2"][i-1])
+        ##print(face, faces["T2"][i-1])
       faces["T2"][tuple(face)] = i
       faces["T2"][i] = tuple(face)
       i += 1
@@ -367,11 +360,11 @@ faces
 def get_face_num(face, face_dict):
   for f in face_dict:
     if type(f) != type(1):
-      #print(f, face, len(set(f) - set(face)))
+      ##print(f, face, len(set(f) - set(face)))
       min = f if len(f) < len(face) else face
       max = f if min == face else face
       if len(set(max) - set(min)) == 0:
-        #print(f, face, len(set(f) - set(face)))
+        ##print(f, face, len(set(f) - set(face)))
         return face_dict[f]
 
 def create_face_graph(T_graph, REL_dict, face_dict, T="T1"):
@@ -382,7 +375,7 @@ def create_face_graph(T_graph, REL_dict, face_dict, T="T1"):
   b = get_face_num(REL_dict[T][e[0]][e[1]][dir[0]], face_dict[T])
   G.add_edge(a,b)
   for e in list(T_graph.edges): 
-    #print(e)
+    ##print(e)
     a = get_face_num(REL_dict[T][e[0]][e[1]][dir[0]], face_dict[T])
     b = get_face_num(REL_dict[T][e[0]][e[1]][dir[1]], face_dict[T])
     G.add_edge(a,b)
@@ -402,19 +395,19 @@ nx.draw(G2, nx.planar_layout(G2),  with_labels=True)
 def distance_face_T1(face_num, face_graph, rightFace):
   all_paths = list(nx.all_simple_paths(face_graph, source=rightFace, target=face_num))
   all_paths = sorted(all_paths, key=len, reverse=True)
-  #print(all_paths[0])
+  ##print(all_paths[0])
   return len(all_paths[0])
 
 def set_width(node, face_G, face_dict, REL_dict, right_face):
   x_left = distance_face_T1(get_face_num(REL_dict["T1"][node]["left"], face_dict["T1"]), face_G, right_face)
   x_right = distance_face_T1(get_face_num(REL_dict["T1"][node]["right"], face_dict["T1"]), face_G, right_face)
-  print(x_left, node, x_right)
+  #print(x_left, node, x_right)
   REL_dict["T1"][node]['x_right'] = x_right
   REL_dict["T1"][node]['x_left'] = x_left
 
 def set_card_node_width(REL_dict, face_G, right_face, left_face):
   D_T1 = distance_face_T1(left_face, face_G, right_face)
-  print("D_T1=",D_T1)
+  #print("D_T1=",D_T1)
   # set x for exterior nodes
   REL_dict["T1"]['w']['x_right'] = 1
   REL_dict["T1"]['w']['x_left'] = 0
@@ -429,23 +422,23 @@ def set_card_node_width(REL_dict, face_G, right_face, left_face):
   REL_dict["T1"]['n']['x_left'] = 1
 
 def distance_face_T2(face, face_graph, low_face):
-  #print(low_face, face)
+  ##print(low_face, face)
   all_paths = list(nx.all_simple_paths(face_graph, source=low_face, target=face))
   all_paths = sorted(all_paths, key=len, reverse=True)
-  print(all_paths[0])
+  #print(all_paths[0])
   return len(all_paths[0])
 
 def set_height(node, face_G, face_dict, REL_dict, bot_face):
   y_bot = distance_face_T2(get_face_num(REL_dict["T2"][node]["bot"], face_dict["T2"]), face_G, bot_face)
   y_top = distance_face_T2(get_face_num(REL_dict["T2"][node]["top"], face_dict["T2"]), face_G, bot_face)
-  print(y_bot, node, y_top)
+  #print(y_bot, node, y_top)
   REL_dict["T2"][node]['y_top'] = y_top
   REL_dict["T2"][node]['y_bot'] = y_bot
 
 def set_card_node_height(REL_dict, face_G, bot_face, top_face):
-  #print('set card height',bot_face, top_face)
+  ##print('set card height',bot_face, top_face)
   D_T2 = distance_face_T2(top_face, face_G, bot_face)
-  print("D_T2=",D_T2)
+  #print("D_T2=",D_T2)
   # set y for exterior nodes
   REL_dict["T2"]['w']['y_bot'] = 0
   REL_dict["T2"]['w']['y_top'] =  D_T2
@@ -462,7 +455,7 @@ def set_card_node_height(REL_dict, face_G, bot_face, top_face):
 rightFace = get_face_num(dict_rel["T1"]['s']['n']["right"], faces["T1"])
 leftFace = get_face_num(dict_rel["T1"]['s']['n']["left"], faces["T1"])
 
-print(rightFace, leftFace)
+#print(rightFace, leftFace)
 
 exterior_nodes = ["n", "e", "s", "w"]
 
@@ -474,7 +467,7 @@ for node in list(T1.nodes):
 
 botFace = get_face_num(dict_rel["T2"]['w']['e']["top"], faces["T2"])
 topFace = get_face_num(dict_rel["T2"]['w']['e']["bot"], faces["T2"])
-print(botFace, topFace)
+#print(botFace, topFace)
 
 set_card_node_height(dict_rel, G2, botFace, topFace)
 

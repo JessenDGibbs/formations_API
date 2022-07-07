@@ -27,7 +27,7 @@ def remove_extra_cip(G):
     while len(cip) > 4:
         # remove a shortcut
         shortcut = random.choice(find_shortcuts(new_G)[0])
-        print(shortcut)
+        ##print(shortcut)
         new_G, added_node_info = remove_shortcut(new_G.copy(), shortcut)
         added_nodes_remove_cip.append(added_node_info)
         cip = find_all_CIP(new_G)
@@ -124,7 +124,7 @@ def create_face_dict(T1_faces, T2_faces):
     i = 1
     while i < len(T1_faces) - 1:
         for face in sorted(T1_faces, key=len):
-            #print(i)
+            ##print(i)
             if len(face) == 3 and 'w' in face:
                 faces["T1"][tuple(face)] = 0
                 faces["T1"][0] = tuple(face)
@@ -134,7 +134,7 @@ def create_face_dict(T1_faces, T2_faces):
             else:
                 #inter = set(list(faces["T1"].keys())[list(faces["T1"].values()).index(i-1)]).intersection(set(face))
                 #if len(inter) >= 2 and tuple(face) not in faces["T1"]:
-                    #print(face, faces["T1"][i-1])
+                    ##print(face, faces["T1"][i-1])
                 faces["T1"][tuple(face)] = i
                 faces["T1"][i] = tuple(face)
                 i += 1
@@ -144,7 +144,7 @@ def create_face_dict(T1_faces, T2_faces):
     while i < len(T2_faces) - 1:
         if i == 6: break
         for face in sorted(T2_faces, key=len):
-            #print(i)
+            ##print(i)
             if len(face) == 3 and 's' in face:
                 faces["T2"][tuple(face)] = 0
                 faces["T2"][0] = tuple(face)
@@ -153,9 +153,9 @@ def create_face_dict(T1_faces, T2_faces):
                 faces["T2"][len(T2_faces) - 1] = tuple(face)
             else:
                 #inter = set(list(faces["T2"].keys())[list(faces["T2"].values()).index(i-1)]).intersection(set(face))
-                #if len(inter) >= 2: print(face, faces["T2"][i-1])
+                #if len(inter) >= 2: #print(face, faces["T2"][i-1])
                 #if len(inter) >= 2 and tuple(face) not in faces["T2"]:
-                    #print(face, faces["T2"][i-1])
+                    ##print(face, faces["T2"][i-1])
                 faces["T2"][tuple(face)] = i
                 faces["T2"][i] = tuple(face)
                 i += 1
@@ -168,19 +168,19 @@ def define_T1_faces(dict_rel, T1):
     dict_rel["T1"]['w']['n']["left"] = f
     T1_faces.append(list(set(f)))
     for e in list(T1.edges):
-        #print(e)
+        ##print(e)
         f = traverse_face(dict_rel["T1"], e[0], e[1])
-        print(e, "face", f)
-        #print(e, f)
+        #print(e, "face", f)
+        ##print(e, f)
         final_face = contains_face(f,T1_faces)
-        #print(f, final_face)
+        ##print(f, final_face)
         for j in range(len(final_face)):
             k = (j+1) % len(final_face)
             h = (j-1) % len(final_face)
             e_right = [final_face[j], final_face[k]]
             e_left = [final_face[j], final_face[h]]
             #if T1.has_edge()
-            print(e_right)
+            #print(e_right)
             dict_rel["T1"][e_right[0]][e_right[1]]["right"] = final_face
             dict_rel["T1"][e_left[0]][e_left[1]]["left"] = final_face
 
@@ -200,7 +200,7 @@ def define_T2_faces(dict_rel, T2):
     T2_faces.append(list(set(f)))
     for e in list(T2.edges):
         f = traverse_face(dict_rel["T2"], e[0], e[1])
-        print(e, f)
+        #print(e, f)
         final_face = contains_face(f,T2_faces)
         for j in range(len(final_face)):
             k = (j+1) % len(final_face)
@@ -230,12 +230,12 @@ def define_coordinates(dict_rel, faces, T1, T2, G1, G2):
     
     botFace = get_face_num(dict_rel["T2"]['w']['e']["top"], faces["T2"])
     topFace = get_face_num(dict_rel["T2"]['w']['e']["bot"], faces["T2"])
-    #print(botFace, topFace)
+    ##print(botFace, topFace)
 
     set_card_node_height(dict_rel, G2, botFace, topFace)
     botFace = get_face_num(dict_rel["T2"]['w']['e']["top"], faces["T2"])
     topFace = get_face_num(dict_rel["T2"]['w']['e']["bot"], faces["T2"])
-    #print(botFace, topFace)
+    ##print(botFace, topFace)
 
     set_card_node_height(dict_rel, G2, botFace, topFace)
     for node in list(T2.nodes):
@@ -257,16 +257,16 @@ def create_room_coord_list(G, REL_G, dict_rel):
 
         
         if room not in exterior_nodes: #and room in list(G.nodes):
-            #print(room)
+            ##print(room)
             x_left,x_right = dict_rel['T1'][room]['x_left'], dict_rel['T1'][room]['x_right']
             y_high,y_low = dict_rel['T2'][room]['y_top'], dict_rel['T2'][room]['y_bot']
             #x_left,x_right = dict_rel['T2'][room]['y_top'], dict_rel['T2'][room]['y_bot']
             #y_high,y_low = dict_rel['T1'][room]['x_left'], dict_rel['T1'][room]['x_right']
 
-            print(room, (x_left,x_right), (y_high,y_low), color)
+            #print(room, (x_left,x_right), (y_high,y_low), color)
             #w, h = x_right - x_left, y_high - y_low
             coords = [(x_left,y_low), (x_right,y_low), (x_right,y_high), (x_left,y_high)]
-            #print(coords)
+            ##print(coords)
             room_list.append(coords)
     return room_list
 
@@ -293,9 +293,9 @@ def create_plan_image(your_dict):
         color = dict_room_color[str(key)] 
         c = (color - np.min(color))/np.ptp(color)
         if key == 'extra': c = [0.8,0.8,0.8]
-        #print(color, c) 
+        ##print(color, c) 
         axs.fill(xs, ys, alpha=0.5, fc=list(c), ec='black')
-        #print(xs, ys)
+        ##print(xs, ys)
         axs.text(xs[0]+0.1, ys[0]+0.1, key_name ,fontsize='medium', va='bottom', fontfamily='serif')
     plt.axis('off')
     plt.show()
@@ -373,3 +373,5 @@ def lambda_handler(event, context):
             "numpy_image": numpy_image
         }),
     }
+
+#fn, numpy_image = create_plan(test_input)

@@ -5,7 +5,7 @@ from transform import PTP_G
 from test_input import G
 
 _, outer_Boundary, _, _ = find_inner_outer(PTP_G)
-print("outer boundary:", outer_Boundary)
+#print("outer boundary:", outer_Boundary)
 cip = find_all_CIP(PTP_G)
 
 createPath(sorted(outer_Boundary), [])
@@ -23,9 +23,9 @@ len(list(PTP_G.edges))
 #list(PTP_G.edges)
 
 outerBoundary = get_points_from_path(createPath(sorted(outer_Boundary), []))
-print("outer boundary:", outerBoundary)
-#outerBoundary = [outerBoundary[0]]+ outerBoundary[::-1][:-1] #clockwise order
 #print("outer boundary:", outerBoundary)
+#outerBoundary = [outerBoundary[0]]+ outerBoundary[::-1][:-1] #clockwise order
+##print("outer boundary:", outerBoundary)
 
 cip
 
@@ -101,11 +101,11 @@ def add_nesw_vertices(OG):
       cip[len(cip) - 2] = cip[len(cip) - 2] + cip[len(cip) - 1][0]
       cip.pop()
 
-  print("Number of corner implying paths: ", len(cip))
-  print("Corner implying paths: ", cip)
+  #print("Number of corner implying paths: ", len(cip))
+  #print("Corner implying paths: ", cip)
 
   if len(cip) > 4:
-    print("Error! More than 4 corner implying paths")
+    #print("Error! More than 4 corner implying paths")
     exit()
 
   def create_cip(index):
@@ -170,7 +170,7 @@ pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "
 nx.draw(four_G, pos, with_labels=True)
 
 is_planar, _ = nx.check_planarity(four_G, counterexample=False)
-print(is_planar)
+#print(is_planar)
 
 max(list(G.nodes))
 

@@ -69,7 +69,7 @@ test_input_graph_data = {
 
 #Create graph
 G = nx.Graph() #create empty grpah
-G.add_nodes_from([(str(key), test_input_graph_data[key]) for key in input_graph_data if key != 'adjs']) #add nodes from the rooms dictionary
+G.add_nodes_from([(str(key), test_input_graph_data[key]) for key in test_input_graph_data if key != 'adjs']) #add nodes from the rooms dictionary
 G.add_edges_from(test_input_graph_data['adjs']) # add edges from the adjacencies lsit
 
 #Draw graph

@@ -26,6 +26,6 @@ pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "
 nx.draw(PTP_G, pos, with_labels=True)
 
 is_planar, _ = nx.check_planarity(PTP_G, counterexample=False)
-print(is_planar)
+#print(is_planar)
 
 nx.is_chordal(PTP_G)

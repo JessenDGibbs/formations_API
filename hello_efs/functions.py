@@ -13,11 +13,11 @@ def findsubsets(s, n):
 def setBlockAttr(G):
   dict_block = {}
   for i, block in enumerate(sorted(nx.biconnected_components(G), key=len)):
-    #print(i)
+    ##print(i)
     for n in block:
       if n not in dict_block:
         dict_block[n] = [i]
-        #print(n)
+        ##print(n)
       else:
         dict_block[n].append(i)
   return dict_block
@@ -42,7 +42,7 @@ def adj(G,v):
   adj_node = []
   #comps = sorted(nx.biconnected_components(G), key=len)
   comps = list(nx.biconnected_components(G))
-  print("comps:",comps)
+  #print("comps:",comps)
   odd = True
   for block in comps:
     #block = sort_by_degree(G, list(block))
@@ -52,7 +52,7 @@ def adj(G,v):
         if n not in adj_node and n != v:
           adj_node.append(n)
     
-  print("adjs:", adj_node)
+  #print("adjs:", adj_node)
   return adj_node
 
 def sort_by_degree(G, aList):
@@ -177,13 +177,13 @@ def biconnectV1(nxgraph):
 
 def adj_group_by_bloc(G,v):
   neigh = list(G.neighbors(v))
-  print("neigh:", neigh)
+  #print("neigh:", neigh)
   #comps = sorted(nx.biconnected_components(G), key=len)
   comps = list(nx.biconnected_components(G))
 
-  print("comps:",comps)
+  #print("comps:",comps)
   adj_node = [ n for block in comps for n in neigh if n in block ]
-  print("new neigh:",adj_node)
+  #print("new neigh:",adj_node)
   return adj_node
 
 def biconnect(OG):
@@ -195,49 +195,49 @@ def biconnect(OG):
   cutVertices = sort_by_degree(G, cut)
 
   for v in cutVertices:
-    print(v)
+    #print(v)
     #update_block_attr(G)
     U = adj(G,v)
     #U = adj_group_by_bloc(G,v)
-    #print(adj_group_by_bloc(G,v))
+    ##print(adj_group_by_bloc(G,v))
     #U = list(G.neighbors(v))
     #OG = G.copy()
     current_G = G.copy()
     for j in range(len(U)):
-      print("articulations:",list(nx.articulation_points(G)))
+      #print("articulations:",list(nx.articulation_points(G)))
       k = (j+1)%len(U)
-      print("j,k,",j,k)
+      #print("j,k,",j,k)
       e = (U[j], U[k])
       #if len(set(G.nodes[U[j]]["block"]).intersection(G.nodes[U[k]]["block"])) == 0:
-      #print(U[j],U[k])
-      if same_Component(current_G,U[j],U[k]): print("same:", U[j],U[k])
+      ##print(U[j],U[k])
+      #if same_Component(current_G,U[j],U[k]): #print("same:", U[j],U[k])
       if same_Component(current_G,U[j],U[k]) == False:
         #if U[j] in cutVertices or U[k] in cutVertices:
         is_planar, _ = nx.check_planarity(G, counterexample=False)
         if is_planar and len(list(nx.articulation_points(G))) == 0: break
-        print("adding edge: ", (U[j], U[k]))
+        #print("adding edge: ", (U[j], U[k]))
         G.add_edge(U[j], U[k])
         added.append((U[j], U[k]))
       if (v, U[j]) in added:
-        print("before removing",(v, U[j]))
+        #print("before removing",(v, U[j]))
         removed.append((v, U[j]))
         if G.has_edge(v, U[j]):
-          print("removing",(v, U[j])) 
+          #print("removing",(v, U[j])) 
           G.remove_edge(v, U[j])
           #added.remove((v, U[j]))
           #if (U[j], v) in added:added.remove((U[j], v))
 
       if (v, U[k]) in added:
-        print("before removing",(v, U[k]))
+        #print("before removing",(v, U[k]))
         removed.append((v, U[j]))
         if G.has_edge(v, U[k]): 
-          print("removing",(v, U[k]))
+          #print("removing",(v, U[k]))
           G.remove_edge(v, U[k])
           #added.remove((v, U[k]))
           #if (U[k], v) in added:added.remove((U[k], v))
       
       #if len(list(nx.articulation_points(G))) == 0: break
-  print("added:", added, "removed:", removed)
+  #print("added:", added, "removed:", removed)
   added_nodes = set(added) - set(removed)      
   return G, list(added_nodes)
 
@@ -257,7 +257,7 @@ def find_all_triangles(OG):
   for node1, neighbours in nodeNeighbours.items():
     for node2 in neighbours:
       AND = (neighbours & nodeNeighbours[node2])
-      #print("n1:", node1, "n2:", node2, "neigh1:",neighbours, "neigh2:", nodeNeighbours[node2], "and:", AND)
+      ##print("n1:", node1, "n2:", node2, "neigh1:",neighbours, "neigh2:", nodeNeighbours[node2], "and:", AND)
       for node3 in AND:
         all_triangles.append([node1, node2, node3])
         e1, e2, e3 = (node1, node2), (node2, node3), (node3, node1)
@@ -270,26 +270,26 @@ def find_all_triangles(OG):
 
 def isElementaryCycle(tri, allTriangles):
   iter =list(itertools.permutations(tri))
-  #print(tri, "iter:", iter)
+  ##print(tri, "iter:", iter)
   for triangle in iter:
     if list(triangle) in allTriangles:
-      #print("in all:", triangle)
+      ##print("in all:", triangle)
       return True
   return False
 
 def remove_edge_with_different_count(OG, base):
   G = OG.copy()
   _ , edge_count = find_all_triangles(G)
-  #print("base:",base)
+  ##print("base:",base)
   e1, e2, e3 = (base[0], base[1]),(base[1], base[2]),(base[2], base[0])
   #count_dict_base[e1], count_dict_base[e2], count_dict_base[e3] = 0, 0, 0
   count_e1 = edge_count[e1] + edge_count[e1[::-1]]
   count_e2 = edge_count[e2] + edge_count[e2[::-1]]
   count_e3 = edge_count[e3] + edge_count[e3[::-1]]
 
-  #print("counts:", count_e1, count_e2, count_e3)
+  ##print("counts:", count_e1, count_e2, count_e3)
   node_with_count = [(base[0], max(count_e3, count_e1)),(base[1], max(count_e2, count_e1)),(base[2], max(count_e2, count_e3))]
-  #print(node_with_count)
+  ##print(node_with_count)
 
   min_count = min(count_e1, count_e2, count_e3)
   new_base = []
@@ -299,7 +299,7 @@ def remove_edge_with_different_count(OG, base):
       new_base.append(node[0])
 
   new_base = tuple(new_base)
-  #print("new base:",new_base)
+  ##print("new base:",new_base)
   return new_base
 
 def valid_base(OG, base):
@@ -310,9 +310,9 @@ def valid_base(OG, base):
 def has_ST(OG):
   G = OG.copy()
   clean_t, _ = find_all_triangles(G)
-  print(clean_t)
-  print("n elementary circuit:", len(clean_t), " vs", (G.number_of_edges() - G.number_of_nodes() + 1))
-  print("n of edge:", G.number_of_edges(), " n of nodes", G.number_of_nodes(), " +1")
+  #print(clean_t)
+  #print("n elementary circuit:", len(clean_t), " vs", (G.number_of_edges() - G.number_of_nodes() + 1))
+  #print("n of edge:", G.number_of_edges(), " n of nodes", G.number_of_nodes(), " +1")
   check = (len(clean_t) == (G.number_of_edges() - G.number_of_nodes() + 1))
   if check == True: return False
   return True
@@ -355,12 +355,12 @@ def find_CIP(G, start, end, path, flip=False):
   _, outer_boundary, _, _ = find_inner_outer(G)
   _, shortcut_points = find_shortcuts(G)
   path.append(start)
-  #print("start:", start, " end:", end, " path:", path, " bool:",(start==end))
+  ##print("start:", start, " end:", end, " path:", path, " bool:",(start==end))
   if start == end:
     return path
   else:
     for e in outer_boundary:
-      #print("e=",e)
+      ##print("e=",e)
       ans = []
       old_path = path.copy()
       if start in e:
@@ -368,7 +368,7 @@ def find_CIP(G, start, end, path, flip=False):
           if node != start and node not in path and (node not in shortcut_points or node == end):
             #start = node
             ans = find_CIP(G, node, end, path, flip)
-            #print("after ans:", ans)
+            ##print("after ans:", ans)
             if len(ans) > 0 and ans[-1] == end:
               return ans
       if ans == []:
@@ -385,7 +385,7 @@ def find_all_CIP(G):
   shortcuts, _ = find_shortcuts(G)
   for e in shortcuts:
     a_cip = find_CIP(G, e[0], e[1], [])
-    print("shortcut:", e, "cip:", a_cip)
+    #print("shortcut:", e, "cip:", a_cip)
     if len(a_cip) > 0:
       all_cip.append(a_cip)
 
@@ -396,12 +396,12 @@ def remove_shortcut(OG, short_cut):
   a,b = short_cut
   if G.has_edge(a,b): G.remove_edge(a,b) 
   else: G.remove_edge(b,a)
-  print("removed:",(a,b))
+  #print("removed:",(a,b))
   d = str(G.number_of_nodes() + 1)
   G.add_edge(a, d)
-  print("add:",(a,d))
+  #print("add:",(a,d))
   G.add_edge(b, d)
-  print("add:",(b,d))
+  #print("add:",(b,d))
   return G, [d, (a,b)]
 
 def transform(OG, edge):
@@ -415,14 +415,14 @@ def transform(OG, edge):
   if total == 1:
     x = list(set(nbd_u).intersection(set(nbd_v)))[0]
     a = str(G.number_of_nodes() + 1)
-    print("edge:", edge,"x:",x, "a:", a)
+    #print("edge:", edge,"x:",x, "a:", a)
     G.add_node(a)
     G.add_edges_from([(a, x), (a, edge[0]), (a,edge[1])])
     G.remove_edge(*edge)
   else:
     x,y = list(set(nbd_u).intersection(set(nbd_v)))
     a = str(G.number_of_nodes() + 1)
-    print("edge:", edge,"x,y:",x,y,  "a:", a)
+    #print("edge:", edge,"x,y:",x,y,  "a:", a)
     G.add_node(a)
     G.add_edges_from([(a, x), (a, y), (a, edge[0]), (a,edge[1])])
     G.remove_edge(*edge)
@@ -439,7 +439,7 @@ def createPath(edge_list, path):
     e_list = edge_list.copy()
     for i in range(len(e_list)):
       a,b = e_list[i]
-      #print("end:", path[-1][1], "a:",a,"b:",b)
+      ##print("end:", path[-1][1], "a:",a,"b:",b)
       if path[-1][1] == a:
         edge_list.pop(i)
         edge_list.insert(0, (a,b))
@@ -463,22 +463,22 @@ def find_all_path(OG, start, end, path, all_paths):
   _, outer_boundary, _, _ = find_inner_outer(G)
   outer_boundary = createPath(sorted(outer_boundary), [])
   path.append(start)
-  #print("start:", start, " end:", end, " path:", path, " bool:",(start==end))
+  ##print("start:", start, " end:", end, " path:", path, " bool:",(start==end))
   if start == end:
     return path
   else:
     for e in outer_boundary:
-      #print("e=",e)
+      ##print("e=",e)
       ans = []
       old_path = path.copy()
-      #print("start:", start,"e:", e, " end:", end, " path:", path)
+      ##print("start:", start,"e:", e, " end:", end, " path:", path)
       if start in e:
         for node in e:
           if node != start and node not in path:
             #start = node
-            #print("start:", start,"node:", node, " end:", end, " path:", path)
+            ##print("start:", start,"node:", node, " end:", end, " path:", path)
             ans = find_all_path(G, node, end, path, all_paths)
-            #print("after ans:", ans)
+            ##print("after ans:", ans)
             if len(ans) > 0 and ans[-1] == end:
               all_paths.append(ans)
               #path = path[:-1]
@@ -488,8 +488,8 @@ def find_all_path(OG, start, end, path, all_paths):
               #continue
       #if ans == []:
       path = old_path
-      #print("new start:", start, " end:", end, " path:", path)
-      #print()
+      ##print("new start:", start, " end:", end, " path:", path)
+      ##print()
       #continue
    
     return all_paths
@@ -519,7 +519,7 @@ def circular_range(start, end, modulo):
         yield start
         start += 1
 
-print(list(circular_range(7, 0+1, 11)))
+#print(list(circular_range(7, 0+1, 11)))
 
 #Four-completion Algorithm 3
 def FourCompletion(OG, boundary, cips):
@@ -538,10 +538,10 @@ def FourCompletion(OG, boundary, cips):
           while r in chosen_points:
             r = random.choice(c)
           chosen_points.append(r)
-        print("chosen from cips:",chosen_points)
+        #print("chosen from cips:",chosen_points)
         indexes = [boundary.index(x) for x in chosen_points]
         min_index = max(indexes)
-      print(indexes, min_index, boundary[min_index:])
+      #print(indexes, min_index, boundary[min_index:])
       if len(chosen_points) < 4:
         for i in range(len(chosen_points), 4):
           p = random.choice(boundary[min_index:])
@@ -552,7 +552,7 @@ def FourCompletion(OG, boundary, cips):
       #cornerPoints = chosen_points
       cornerPoints = [point for point in boundary if point in chosen_points] #points in the order of the boundary
       #cornerPoints = [str(p) for p in[1, 5, 8, 2]]
-    print("cornerPoints:",cornerPoints)
+    #print("cornerPoints:",cornerPoints)
     #p1 = sorted(find_all_path(G, cornerPoints[0], cornerPoints[1], [], []), key=len)[0] 
     p1 = [boundary[i] for i in list(circular_range(boundary.index(cornerPoints[0]), boundary.index(cornerPoints[1])+1, len(boundary)))]
     #all_p = find_all_path(G, cornerPoints[1], cornerPoints[2], [], [])
@@ -565,7 +565,7 @@ def FourCompletion(OG, boundary, cips):
     #p4 = sorted([p for p in all_p if is_overlaping_path(p3,p) == False], key=len)[0]
     p4 = [boundary[i] for i in list(circular_range(boundary.index(cornerPoints[3]), boundary.index(cornerPoints[0])+1, len(boundary)))]
 
-    print("all path",p1,p2,p3,p4)
+    #print("all path",p1,p2,p3,p4)
 
 
     G.add_nodes_from("nesw")
@@ -579,7 +579,7 @@ def FourCompletion(OG, boundary, cips):
     G.add_edges_from([("n","w"), ("w","s"), ("s","e"),("e","n")])
 
     is_planar, _= nx.check_planarity(G)
-    print("is planar:",is_planar)
+    #print("is planar:",is_planar)
     if is_planar == True: 
       break
     #break

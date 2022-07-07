@@ -167,7 +167,7 @@ class Algorithm_MCSM(TriangulationAlgorithm):
 			F : a set of edges s.t. C + F is a minimal triangulation C.
 		'''
 		#logging.info("=== triangulate_MCS_M ===")
-		print("=== triangulate_MCS_M ===")
+		#print("=== triangulate_MCS_M ===")
 		
 		F = []
 		unnumbered_nodes = [n for n in C.nodes()]
@@ -200,7 +200,7 @@ class Algorithm_MCSM(TriangulationAlgorithm):
 					unnumbered_lowerweight_nodes = [node_x for node_x in unnumbered_nodes if weight[node_x] < weight[node_u]]
 					if nx.has_path(C.subgraph(unnumbered_lowerweight_nodes+[node_v, node_u]),node_v, node_u):
 						#logging.debug("Add target node "+str(node_u)+" to set S")
-						print("Add target node "+str(node_u)+" to set S")
+						#print("Add target node "+str(node_u)+" to set S")
 						S.append(node_u)
 			for node_u in S:
 				weight[node_u] += 1
@@ -208,10 +208,10 @@ class Algorithm_MCSM(TriangulationAlgorithm):
 					F.append((node_v, node_u))
 					
 			#logging.debug("End of iteration. all node labels:")
-			print("End of iteration. all node labels:")
+			#print("End of iteration. all node labels:")
 			#logging.debug([str(n)+": "+str(weight[n]) for n in C])	
-			print([str(n)+": "+str(weight[n]) for n in C])	
-		print("F a set of edges s.t. C + F is a minimal triangulation C.:", F)
+			#print([str(n)+": "+str(weight[n]) for n in C])	
+		#print("F a set of edges s.t. C + F is a minimal triangulation C.:", F)
 		return F #[F[-1]] #only the last one for now
 
 def triangulate_MCSM(G, randomized=False, repetitions=1, reduce_graph=True, timeout=-1):

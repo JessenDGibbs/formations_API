@@ -15,7 +15,7 @@ added_edges_bicon
 #bcn_edges = biconnectV2(G.copy())
 #bcn_edges
 
-print(added_edges_bicon)
+#print(added_edges_bicon)
 
 #biconnect_augment_G = G.copy()
 #biconnect_augment_G.add_edges_from(bcn_edges)
@@ -26,4 +26,4 @@ pos = {"1":[-2,0], "2":[-1,0.5], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "
 nx.draw(biconnect_augment_G, pos, with_labels=True)
 
 is_planar, embedding = nx.check_planarity(biconnect_augment_G, counterexample=False)
-print(is_planar)
+#print(is_planar)
