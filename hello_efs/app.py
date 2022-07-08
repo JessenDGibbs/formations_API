@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 import networkx as nx
 import random
+from PIL import Image
 from test_input import test_input_graph_data as test_input
 from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
@@ -76,6 +77,8 @@ def create_trivial_rel(G):
     trivial_REL_G.add_edge("w", "s", t=0)
     trivial_REL_G.add_edge("s", "e", t=0)
     trivial_REL_G.add_edge("e", "s", t=0)
+
+    return trivial_REL_G
 
 def edge_expansion(G,list_contraction):
     REL_G = G.copy()
@@ -281,6 +284,7 @@ def create_polygon_dict(room_list):
 def create_plan_image(your_dict):
     fig, axs = plt.subplots()
     axs.set_aspect('equal', 'datalim')
+    axs.axis('off')
 
     for key,geom in your_dict.items(): 
         xs, ys = geom.exterior.xy
@@ -301,10 +305,12 @@ def create_plan_image(your_dict):
     plt.show()
     path = 'plan.png'
     plt.savefig('plan.png')
-    data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
-    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
     
-    return path, data
+    img = Image.open(path)
+  
+    numpydata = np.asarray(img)
+    
+    return path, numpydata
 
 def create_plan(input_graph_data):
     G = nx.Graph() #create empty grpah
@@ -333,7 +339,7 @@ def create_plan(input_graph_data):
 
     T1, T2 = create_T1_T2(rel_G)
 
-    dict_rel, face_dict, G1, G2 = (rel_G, T1, T2)
+    dict_rel, face_dict, G1, G2 = create_dict_rel(rel_G, T1, T2)
 
     define_coordinates(dict_rel, face_dict, T1, T2, G1, G2)
 

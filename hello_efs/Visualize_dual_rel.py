@@ -175,16 +175,16 @@ for i,sublist in enumerate(room_list):
     
     your_dict[i] = Polygon(sublist)
 
-plt.figure()
+#plt.figure()
 
-for key,your_polygon in your_dict.items():
+#for key,your_polygon in your_dict.items():
     
-    plt.plot(*your_polygon.exterior.xy)
+    #plt.plot(*your_polygon.exterior.xy)
 
 added_nodes_ST_clean = [edge[0] for edge in added_nodes_ST]
 added_nodes_ST_clean
 
-fig, axs = plt.subplots()
+'''fig, axs = plt.subplots()
 axs.set_aspect('equal', 'datalim')
 
 for key,geom in your_dict.items(): 
@@ -206,7 +206,7 @@ for key,geom in your_dict.items():
   ##print(xs, ys)
   axs.text(xs[0]+0.1, ys[0]+0.1, key_name ,fontsize='medium', va='bottom', fontfamily='serif')
 
-plt.show()
+plt.show()'''
 
 pos = {"1":[-1,1], "2":[-2,0], "3":[0,0], "4":[-1,0.5], "5":[1,0], "6":[1,-1], "7":[0.5, -2], 
        "8":[1.5,-2], "9":[-1,0], "10": [1.5,-1], "11": [0.5,-0.5], "12": [0.2,0.5],
