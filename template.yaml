@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
   sam-app
@@ -36,14 +36,14 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref EfsLambdaVpc
-      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      AvailabilityZone: !Select [0, !GetAZs ""]
       MapPublicIpOnLaunch: false
       CidrBlock: "10.0.0.0/24"
   EfsLambdaSubnetB:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref EfsLambdaVpc
-      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      AvailabilityZone: !Select [1, !GetAZs ""]
       MapPublicIpOnLaunch: false
       CidrBlock: "10.0.1.0/24"
   EfsFileSystem:
