@@ -302,7 +302,7 @@ def create_plan_image(your_dict):
         ##print(xs, ys)
         axs.text(xs[0]+0.1, ys[0]+0.1, key_name ,fontsize='medium', va='bottom', fontfamily='serif')
     plt.axis('off')
-    plt.show()
+    #plt.show()
     path = 'plan.png'
     plt.savefig('plan.png')
     
@@ -380,4 +380,4 @@ def lambda_handler(event, context):
         }),
     }
 
-fn, numpy_image = create_plan(test_input)
+#fn, numpy_image = create_plan(test_input)
