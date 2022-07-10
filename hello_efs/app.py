@@ -396,6 +396,8 @@ def lambda_handler(event, context):
             'isBase64Encoded': True
         }
     else:
+        # create image
+        plan_file, image_data = create_plan(test_input)
         # write image to user specific s3 container
         day = str(date.today())
         now = datetime.datetime.now().replace(second=0, microsecond=0)
@@ -408,7 +410,9 @@ def lambda_handler(event, context):
             'body':  json.dumps({
                 'headers': {"Content-Type": "application/json"},
                 'statusCode': 200,
-                "output": output
+                "output": output,
+                "plan_fn" :  plan_file,
+                "img_data" : image_data
             }),
 
         }
