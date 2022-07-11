@@ -1,16 +1,19 @@
-import json
 import base64
 import boto3
 import json
+import os
+import tempfile
+os.environ['MPLCONFIGDIR'] = tempfile.mkdtemp()
 from datetime import date
 import datetime
 from pathlib import Path
 import networkx as nx
 import random
+import io
 #from PIL import Image
 from test_input import test_input_graph_data as test_input
 #from shapely.geometry import Polygon
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from functions import *
 from REL_formation import initialize_good_vertices, contract, get_trivial_rel, expand
 from REL_to_coord import get_t_neighbors, update_cw_ccw, traverse_face, contains_face, set_node_face, create_face_graph, get_face_num, set_card_node_height, set_card_node_width, set_height, set_width
@@ -301,8 +304,8 @@ def create_polygon_dict(room_list):
 
 
 def create_plan_image(your_dict):
-    return "plan created", your_dict
-    '''fig, axs = plt.subplots()
+    #return "plan created", your_dict
+    fig, axs = plt.subplots()
     axs.set_aspect('equal', 'datalim')
     axs.axis('off')
 
@@ -317,7 +320,7 @@ def create_plan_image(your_dict):
         # if key not in list(dict_room_color.keys()):
           #key = 'extra'
         color = dict_room_color[str(key)]
-        c = (color - np.min(color))/np.ptp(color)
+        c = [col/255 for col in list(color)]
         if key == 'extra':
             c = [0.8, 0.8, 0.8]
         ##print(color, c)
@@ -326,15 +329,22 @@ def create_plan_image(your_dict):
         axs.text(xs[0]+0.1, ys[0]+0.1, key_name, fontsize='medium',
                  va='bottom', fontfamily='serif')
     plt.axis('off')
+    image_path = os.environ['MPLCONFIGDIR'] + '/plan.png'
+    plt.savefig(image_path)
     #plt.show()
-    path = 'plan.png'
-    plt.savefig('plan.png')
+    #path = 'plan.png'
+
+    #img_data = io.BytesIO()
+    #plt.savefig(img_data, format='png')
+    #img_data.seek(0)
+
+    #plt.savefig('plan.png')
 
     #img = Image.open(path)
 
     #numpydata = np.asarray(img)
 
-    return path, []'''
+    return image_path, your_dict
 
 
 def create_plan(input_graph_data):
@@ -381,43 +391,53 @@ def create_plan(input_graph_data):
 
 s3 = boto3.client('s3')
 
-
 def lambda_handler(event, context):
     # test create plan
-    outcome, room_pos = create_plan(test_input)
-    if event["queryStringParameters"]["sender"] == "0":
-        response = s3.get_object(
-            Bucket='maket-generatedcontent',
-            Key='userData/2022-07-07/jessen/21:15:00/2D_design.png',
-        )
-        image = response['Body'].read()
+    image_path, room_pos = create_plan(test_input)
+    s3.upload_file(image_path, "maket-generatedcontent", "userData/2022-07-07/jessen/21:15:00/plan.png")
 
-        return {
-            'headers': {"Content-Type": "image/png"},
-            'statusCode': 200,
-            'body': base64.b64encode(image).decode('utf-8'),
-            'isBase64Encoded': True
-        }
-    else:
-        
-        # write image to user specific s3 container
-        day = str(date.today())
-        now = datetime.datetime.now().replace(second=0, microsecond=0)
-        path = "userData/" + day + "/" + \
-            event["queryStringParameters"]["sender"] + "/" + \
-            str(now.time()) + "/" + "generated_image.png"
-        s3.upload_file("./2D_design.png", "maket-generatedcontent", path)
-        output = "https://maket-generatedcontent.s3.ca-central-1.amazonaws.com/" + path
-        return {
-            'body':  json.dumps({
-                'headers': {"Content-Type": "application/json"},
-                'statusCode': 200,
-                "output": output,
-                "create_plan_outcome" :  outcome,
-                "rooms_positions" : room_pos
-            }),
+    #s3 = boto3.resource("s3")
+    #s3.meta.client.upload_file(image_path, "maket-generatedcontent", "plan.png")
+    #s3.upload_file(image_path, "maket-generatedcontent", "userData/2022-07-07/jessen/21:15:00/plan.png")
+    
+    # if event[“queryStringParameters”][“sender”] == “0”:
+    '''response = s3.get_object(
+        Bucket="maket-generatedcontent",
+        Key="userData/2022-07-07/jessen/21:15:00/2D_design.png",
+    )'''
 
-        }
+    ## Save image to s3 bucket
+    #image_data.seek(0)
+    #s3 = boto3.resource('s3')
+    #bucket = s3.Bucket(response.Bucket)
+    #bucket.put_object(Body=image_data, ContentType='image/png', Key="userData/2022-07-07/jessen/21:15:00/plan.png")
 
+    #image = response["Body"].read()
+    return {
+        "headers": {"Content-Type": "image/png"},
+        "statusCode": 200, #"body": base64.b64encode(image).decode("utf-8"),
+        "isBase64Encoded": True,
+        "image_size" : os.path.getsize(image_path),
+        "rooms_position": room_pos,
+        "image_filename" : image_path
+    }
+    # else:
+    #     # write image to user specific s3 container
+    #     day = str(date.today())
+    #     now = datetime.datetime.now().replace(second=0, microsecond=0)
+    #     path = “userData/” + day + “/” + \
+    #         event[“queryStringParameters”][“sender”] + “/” + \
+    #         str(now.time()) + “/” + “generated_image.png”
+    #     s3.upload_file(“./2D_design.png”, “maket-generatedcontent”, path)
+    #     output = “https://maket-generatedcontent.s3.ca-central-1.amazonaws.com/” + path
+    #     return {
+    #         ‘body’:  json.dumps({
+    #             ‘headers’: {“Content-Type”: “application/json”},
+    #             ‘statusCode’: 200,
+    #             “output”: output
+    #         }),
+    #     }
 
-fn, numpy_image = create_plan(test_input)
+#print(os.environ['MPLCONFIGDIR'])
+#fn, numpy_image = create_plan(test_input)
+
