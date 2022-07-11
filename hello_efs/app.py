@@ -7,10 +7,10 @@ import datetime
 from pathlib import Path
 import networkx as nx
 import random
-from PIL import Image
+#from PIL import Image
 from test_input import test_input_graph_data as test_input
-from shapely.geometry import Polygon
-import matplotlib.pyplot as plt
+#from shapely.geometry import Polygon
+#import matplotlib.pyplot as plt
 from functions import *
 from REL_formation import initialize_good_vertices, contract, get_trivial_rel, expand
 from REL_to_coord import get_t_neighbors, update_cw_ccw, traverse_face, contains_face, set_node_face, create_face_graph, get_face_num, set_card_node_height, set_card_node_width, set_height, set_width
@@ -296,17 +296,18 @@ def create_polygon_dict(room_list):
 
     for i, sublist in enumerate(room_list):
 
-        your_dict[i] = Polygon(sublist)
+        your_dict[i] = sublist #Polygon(sublist)
     return your_dict
 
 
 def create_plan_image(your_dict):
-    fig, axs = plt.subplots()
+    return "plan created", your_dict
+    '''fig, axs = plt.subplots()
     axs.set_aspect('equal', 'datalim')
     axs.axis('off')
 
     for key, geom in your_dict.items():
-        xs, ys = geom.exterior.xy
+        xs, ys = [coord[0] for coord in geom], [coord[1] for coord in geom] #geom.exterior.xy
         #key = key + 1
         key_name = key + 1
         if key > 7:
@@ -333,7 +334,7 @@ def create_plan_image(your_dict):
 
     #numpydata = np.asarray(img)
 
-    return path, []
+    return path, []'''
 
 
 def create_plan(input_graph_data):
@@ -382,6 +383,8 @@ s3 = boto3.client('s3')
 
 
 def lambda_handler(event, context):
+    # test create plan
+    outcome, room_pos = create_plan(test_input)
     if event["queryStringParameters"]["sender"] == "0":
         response = s3.get_object(
             Bucket='maket-generatedcontent',
@@ -396,8 +399,7 @@ def lambda_handler(event, context):
             'isBase64Encoded': True
         }
     else:
-        # create image
-        plan_file, image_data = create_plan(test_input)
+        
         # write image to user specific s3 container
         day = str(date.today())
         now = datetime.datetime.now().replace(second=0, microsecond=0)
@@ -411,11 +413,11 @@ def lambda_handler(event, context):
                 'headers': {"Content-Type": "application/json"},
                 'statusCode': 200,
                 "output": output,
-                "plan_fn" :  plan_file,
-                "img_data" : image_data
+                "create_plan_outcome" :  outcome,
+                "rooms_positions" : room_pos
             }),
 
         }
 
 
-#fn, numpy_image = create_plan(test_input)
+fn, numpy_image = create_plan(test_input)

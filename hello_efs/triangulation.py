@@ -1,8 +1,8 @@
 import random 
 import networkx as nx
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import time
-import numpy as np 
+#import numpy as np 
 class TriangulationNotSuccessfulException(Exception):
 	'''
 	Custom error type that gets thrown
@@ -222,8 +222,6 @@ def triangulate_MCSM(G, randomized=False, repetitions=1, reduce_graph=True, time
 		return {
 			"H" : H_opt,
 			"size" : size_opt,
-			"alpha" : alpha_opt, 
-			"mean" : np.mean(all_sizes),
-			"variance" : np.var(all_sizes),
+			"alpha" : alpha_opt, #"mean" : np.mean(all_sizes),"variance" : np.var(all_sizes),
 			"repetitions" : repetitions
 			}
