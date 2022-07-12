@@ -1,6 +1,4 @@
-#REL Formation
 import networkx as nx
-from FourCompletion import four_G
 
 ## Functions
 
@@ -122,47 +120,6 @@ def contract(OG, contractions, good_vertices):
   return -1, -1, G, contractions, good_vertices
 
 
-## Edge Contraction
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
-       "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
-#nx.draw(four_G, pos, with_labels=True)
-
-four_G.has_edge('3', '8')
-
-good_verts = initialize_good_vertices(four_G)
-#print("initial good verts: ", good_verts)
-#print("n of edges:", len(list(four_G.edges)), "n of nodes:", len(list(four_G.nodes)))
-v, u, contracted_G, list_contraction, good_verts = contract(four_G, [], good_verts)
-#print("Contracted the edge between " + str(u) + " and " + str(v))
-#print()
-while v != -1:
-  
-  #break
-  #print("current good verts: ", good_verts)
-  good_verts = initialize_good_vertices(contracted_G)
-  v, u, contracted_G, list_contraction, good_verts = contract(contracted_G, list_contraction, good_verts)
-  #print("current good verts: ", good_verts)
-  ##print("n of edges:", len(list(contracted_G.edges)), "n of nodes:", len(list(contracted_G.nodes)))
-  #print("Contracted the edge between " + str(u) + " and " + str(v))
-  #print()
-    
-  #break
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
-       "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
-#nx.draw(contracted_G, pos, with_labels=True)
-
-##Trivial REL
-
-edge_type_color_dict = {
-    0: "black",
-    -1: "green",
-    1: "blue",
-    2: "red"
-}
 
 def get_trivial_rel(end_contract_G):
   trivial_REL = nx.DiGraph()
@@ -185,30 +142,6 @@ def get_trivial_rel(end_contract_G):
       #G[node][self.west] = 0
   return trivial_REL
 
-trivial_REL_G = get_trivial_rel(contracted_G) #contracted_G
-trivial_REL_G.add_edge("n", "w", t=0)
-trivial_REL_G.add_edge("w", "n", t=0)
-trivial_REL_G.add_edge("n", "e", t=0)
-trivial_REL_G.add_edge("e", "n", t=0)
-trivial_REL_G.add_edge("s", "w", t=0)
-trivial_REL_G.add_edge("w", "s", t=0)
-trivial_REL_G.add_edge("s", "e", t=0)
-trivial_REL_G.add_edge("e", "s", t=0)
-
-list(trivial_REL_G.edges)
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
-       "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
-colors = [edge_type_color_dict[trivial_REL_G [u][v]['t']] for u,v in trivial_REL_G .edges]
-#nx.draw(trivial_REL_G, pos, edge_color=colors, with_labels=True)
-
-list_contraction
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
-       "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
-colors = [edge_type_color_dict[trivial_REL_G [u][v]['t']] for u,v in trivial_REL_G .edges]
 #nx.draw(trivial_REL_G, pos, edge_color=colors, with_labels=True)
 
 ## Functions for expansion
@@ -603,34 +536,4 @@ def expand(G, contractions):
   #self.node_position[o][0] = 2 * self.node_position[o][0] - self.node_position[v][0]
   #self.node_position[o][1] = 2 * self.node_position[o][1] - self.node_position[v][1]
 
-## Edge expansion
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [-1,-0.9],
-       "13": [1.5,-1], "14": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [0.2,-3],"w": [-4,0]}
-colors = [edge_type_color_dict[trivial_REL_G [u][v]['t']] for u,v in trivial_REL_G .edges]
-#nx.draw(trivial_REL_G, pos, edge_color=colors, with_labels=True)
-
-#{'v': '3', 'u': '14', 'y_z': ['n', 's'], 'v_nbr': ['14', 'e', 's', 'n']}
-
-list_contraction
-
-REL_G = trivial_REL_G.copy()
-contractions_list = list_contraction.copy()
-#print("LEN:", len(contractions_list))
-round = 0
-while len(contractions_list) != 0:
-  #print()
-  #print("nodes:", list(REL_G.nodes))
-  REL_G = expand(REL_G, contractions_list)
-  round += 1
-  #print(round)
-  #if round == 3: 
-    #print(contractions_list[-1])
-    #break
-
-
-
-
-#set(list(REL_G.nodes)) == set(list(four_G.nodes))
 

@@ -4,11 +4,7 @@
 #import cv2
 #import matplotlib.pyplot as plt
 #from shapely.geometry import Polygon
-from REL_to_coord import dict_rel
-from REL_formation import REL_G, edge_type_color_dict
-from triang_ST_cip import added_nodes_ST
-from transform import final_added_edges
-from REL_to_coord import exterior_nodes
+
 ## Data needed
 
 aspect_ratio = 0.5 #0.5 - 2.0

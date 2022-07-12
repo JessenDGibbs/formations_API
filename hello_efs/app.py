@@ -129,6 +129,8 @@ def create_dict_rel(REL_G, T1, T2):
     update_cw_ccw(dict_rel)
     T1_f = define_T1_faces(dict_rel, T1)
     T2_f = define_T2_faces(dict_rel, T2)
+    #print("T1 face:", T1_f)
+    #print("T2 face:", T2_f)
     set_node_face(dict_rel, [T1, T2])
     face_dict = create_face_dict(T1_f, T2_f)
     G1 = create_face_graph(T1, dict_rel, face_dict, T="T1")
@@ -238,47 +240,32 @@ def define_coordinates(dict_rel, faces, T1, T2, G1, G2):
         if node not in exterior_nodes:
             set_width(node, G1, faces, dict_rel, rightFace)
 
-    botFace = get_face_num(dict_rel["T2"]['w']['e']["top"], faces["T2"])
-    topFace = get_face_num(dict_rel["T2"]['w']['e']["bot"], faces["T2"])
-    ##print(botFace, topFace)
-
-    set_card_node_height(dict_rel, G2, botFace, topFace)
-    botFace = get_face_num(dict_rel["T2"]['w']['e']["top"], faces["T2"])
-    topFace = get_face_num(dict_rel["T2"]['w']['e']["bot"], faces["T2"])
+    botFace = get_face_num(dict_rel["T2"]['w']['e']["bot"], faces["T2"])
+    topFace = get_face_num(dict_rel["T2"]['w']['e']["top"], faces["T2"])
     ##print(botFace, topFace)
 
     set_card_node_height(dict_rel, G2, botFace, topFace)
     for node in list(T2.nodes):
         if node not in exterior_nodes:
-            set_height(node, G2, faces, dict_rel, botFace)
+            set_height(node, G2, faces, dict_rel, topFace)
 
 
 def create_room_coord_list(G, REL_G, dict_rel):
     exterior_nodes = ["n", "e", "s", "w"]
     room_list = []
+    non_card_nodes = set(list(REL_G.nodes)) - set(exterior_nodes)
+    node_list = sorted(non_card_nodes, key = lambda x: int(x)) + exterior_nodes
 
-    for room in list(REL_G.nodes):
-
-        if room in list(G.nodes):
-            color = dict_room_color[room]
-        else:
-            color = dict_room_color['extra']
-
-        # if room == 'n' or room =='s' or room == 'w' or room=='e' or room=='1':
-
-        if room not in exterior_nodes:  # and room in list(G.nodes):
-            # print(room)
-            x_left, x_right = dict_rel['T1'][room]['x_left'], dict_rel['T1'][room]['x_right']
-            y_high, y_low = dict_rel['T2'][room]['y_top'], dict_rel['T2'][room]['y_bot']
-            #x_left,x_right = dict_rel['T2'][room]['y_top'], dict_rel['T2'][room]['y_bot']
-            #y_high,y_low = dict_rel['T1'][room]['x_left'], dict_rel['T1'][room]['x_right']
-
-            #print(room, (x_left,x_right), (y_high,y_low), color)
-            #w, h = x_right - x_left, y_high - y_low
-            coords = [(x_left, y_low), (x_right, y_low),
-                      (x_right, y_high), (x_left, y_high)]
-            # print(coords)
+    for room in node_list:
+        if room not in exterior_nodes: #and room in list(G.nodes):
+            #print(room)
+            x_left,x_right = dict_rel['T1'][room]['x_left'], dict_rel['T1'][room]['x_right']
+            y_high,y_low = dict_rel['T2'][room]['y_top'], dict_rel['T2'][room]['y_bot']
+            
+            coords = [(x_left,y_low), (x_right,y_low), (x_right,y_high), (x_left,y_high)]
+            #print(coords)
             room_list.append(coords)
+    #print(room_list)
     return room_list
 
 
@@ -351,12 +338,19 @@ def create_plan(input_graph_data):
     new_G, added_nodes_cip = remove_extra_cip(noST_G)
 
     final_added_edges = list(added_edges_triang) + list(added_edges_bicon)
+    #print(final_added_edges)
 
     PTP_G = new_G.copy()
     for e in sorted(final_added_edges):
         PTP_G = transform(PTP_G, e)
 
     four_G, card_dir_outer = add_nesw_vertices(PTP_G)
+    pos = {"1":[0.2,0.8], "2":[-1.2,0 ], "3":[-1.5,-1], "4":[-2,0], "5":[1,0], "6":[-0.1,-1], "7":[0.3, -2], 
+       "8":[1.5,-1], "9":[0.5,-1], "10": [-1,0.6], "11": [1.3,0.8], "12": [-0.8,-1],
+       "13": [2.5,-0.5], "n": [0.2,2],"e": [ -3,0],"s": [0,-3],"w": [4,0]}
+    
+    #print(list(four_G.nodes))
+    #nx.draw(four_G, pos,  with_labels=True)
 
     contracted_four_G, contractions = edge_contraction(four_G)
     trivial_rel = create_trivial_rel(contracted_four_G)
@@ -366,6 +360,8 @@ def create_plan(input_graph_data):
     T1, T2 = create_T1_T2(rel_G)
 
     dict_rel, face_dict, G1, G2 = create_dict_rel(rel_G, T1, T2)
+
+    #print(dict_rel)
 
     define_coordinates(dict_rel, face_dict, T1, T2, G1, G2)
 
@@ -540,5 +536,5 @@ def lambda_handler(event, context):
     #         }),
     #     }
 
-#print(os.environ['MPLCONFIGDIR'])
-#fn, numpy_image = create_plan(test_input)
+print(os.environ['MPLCONFIGDIR'])
+fn, numpy_image = create_plan(test_input)

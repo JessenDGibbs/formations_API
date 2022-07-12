@@ -259,56 +259,31 @@ def biconnect(OG):
   G = OG.copy()
   added = []
   removed = []
-  cut = list(nx.articulation_points(G))
-  cutVertices = cut
-  cutVertices = sort_by_degree(G, cut)
-
+  cutVertices = list(nx.articulation_points(G))
   for v in cutVertices:
     #print(v)
-    #update_block_attr(G)
-    U = adj(G,v)
-    #U = adj_group_by_bloc(G,v)
-    ##print(adj_group_by_bloc(G,v))
-    #U = list(G.neighbors(v))
-    #OG = G.copy()
-    current_G = G.copy()
-    for j in range(len(U)):
-      #print("articulations:",list(nx.articulation_points(G)))
-      k = (j+1)%len(U)
-      #print("j,k,",j,k)
+    U = adj(OG,v)
+    for j in range(len(U)-1):
+      k = j+1
       e = (U[j], U[k])
       #if len(set(G.nodes[U[j]]["block"]).intersection(G.nodes[U[k]]["block"])) == 0:
-      ##print(U[j],U[k])
-      #if same_Component(current_G,U[j],U[k]): #print("same:", U[j],U[k])
-      if same_Component(current_G,U[j],U[k]) == False:
-        #if U[j] in cutVertices or U[k] in cutVertices:
-        is_planar, _ = nx.check_planarity(G, counterexample=False)
-        if is_planar and len(list(nx.articulation_points(G))) == 0: break
-        #print("adding edge: ", (U[j], U[k]))
-        G.add_edge(U[j], U[k])
-        added.append((U[j], U[k]))
+      if same_Component(G,U[j],U[k]) == False:
+        #print("adding edge: ", e)
+        G.add_edge(*e)
+        added.append(e)
       if (v, U[j]) in added:
-        #print("before removing",(v, U[j]))
-        removed.append((v, U[j]))
-        if G.has_edge(v, U[j]):
-          #print("removing",(v, U[j])) 
+        #print("removing",(v, U[j]))
+        if G.has_edge(v, U[j]): 
           G.remove_edge(v, U[j])
-          #added.remove((v, U[j]))
-          #if (U[j], v) in added:added.remove((U[j], v))
+          added.remove((v, U[j]))
 
       if (v, U[k]) in added:
-        #print("before removing",(v, U[k]))
-        removed.append((v, U[j]))
+        #print("removing",(v, U[k]))
         if G.has_edge(v, U[k]): 
-          #print("removing",(v, U[k]))
           G.remove_edge(v, U[k])
-          #added.remove((v, U[k]))
-          #if (U[k], v) in added:added.remove((U[k], v))
-      
-      #if len(list(nx.articulation_points(G))) == 0: break
-  #print("added:", added, "removed:", removed)
-  added_nodes = set(added) - set(removed)      
-  return G, list(added_nodes)
+          added.remove((v, U[k]))
+        
+  return G, added   
 
 ##other
 

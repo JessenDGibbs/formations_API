@@ -4,30 +4,7 @@ from functions import *
 from transform import PTP_G
 from test_input import G
 
-_, outer_Boundary, _, _ = find_inner_outer(PTP_G)
-#print("outer boundary:", outer_Boundary)
-cip = find_all_CIP(PTP_G)
 
-createPath(sorted(outer_Boundary), [])
-
-#get_points_from_path(outer_Boundary)
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [1.5,-1], "12": [-1,-1.5],
-       "13": [0.1,-1], "14": [0.7,-0.8], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-#nx.draw(PTP_G, pos, with_labels=True)
-
-len(PTP_G.nodes)
-len(list(PTP_G.edges))
-
-#list(PTP_G.edges)
-
-outerBoundary = get_points_from_path(createPath(sorted(outer_Boundary), []))
-#print("outer boundary:", outerBoundary)
-#outerBoundary = [outerBoundary[0]]+ outerBoundary[::-1][:-1] #clockwise order
-##print("outer boundary:", outerBoundary)
-
-cip
 
 def add_nesw_vertices(OG):
   G = OG.copy()
@@ -75,8 +52,9 @@ def add_nesw_vertices(OG):
           if temp1 is not None:
             for vertex1 in temp1:
               if (vertex1, vertex) in H.edges:
-                temp.remove(vertex)
-                outer_vertices.append(vertex)
+                if vertex in temp: 
+                  temp.remove(vertex)
+                  outer_vertices.append(vertex)
     cip.append(temp)
     outer_vertices.insert(0, temp[len(temp) - 1])
     if len(outer_vertices) == 1 and loop_count == 0:
@@ -151,54 +129,3 @@ def add_nesw_vertices(OG):
 
   return G, polar_connection
 
-temp_G, polar_coord = add_nesw_vertices(PTP_G)
-polar_coord
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [1.5,-1], "12": [-1,-1.5],
-       "13": [0.1,-1], "14": [0.7,-0.8], "n": [-3,0],"e": [ 0.2,2],"s": [ 3,-2],"w": [ -1,-3]}
-#nx.draw(temp_G, pos, with_labels=True)
-
-#four_G, card_dir_outer = FourCompletion(PTP_G, outerBoundary, cip)
-four_G, card_dir_outer = add_nesw_vertices(PTP_G)
-#four_G.nodes #To debug
-#[1,5, 8 ,2]
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [1.5,-1], "12": [-1,-1.5],
-       "13": [0.1,-1], "14": [0.7,-0.8], "n": [-3,0],"e": [ 0.2,2],"s": [ 3,-2],"w": [ -1,-3]}
-#nx.draw(four_G, pos, with_labels=True)
-
-is_planar, _ = nx.check_planarity(four_G, counterexample=False)
-#print(is_planar)
-
-max(list(G.nodes))
-
-def to_my_int(G, node):
-  if node == "n":
-    return 14
-  if node == "e":
-    return 15
-  if node == "s":
-    return 16
-  if node == "w":
-    return 17
-  else:
-    return int(node) - 1
-
-len(list(PTP_G.nodes))
-
-edges = [[to_my_int(four_G, e[0]), to_my_int(four_G, e[1])] for e in list(PTP_G.edges)]
-
-len(edges)
-
-graph_info = [18, 29, [[0, 1],[0, 2],[0, 8],[0, 11],
-                      [1, 2],[1, 3],[1, 8],[2, 3],[2, 4],[2, 11],[2, 12],
-                      [3, 8],[4, 5],[4, 10],[4, 12],[4, 13],
-                      [5, 6],[5, 7],[5, 9],[5, 10],[5, 13],[6, 9],[6, 10],
-                      [7, 9],[7, 11],[7, 12],[7, 13],
-                      [11, 12],[12, 13]]]
-
-len(graph_info[2])
-
-edges
