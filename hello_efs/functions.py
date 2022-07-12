@@ -8,6 +8,75 @@ import itertools
 def findsubsets(s, n):
     return list(itertools.combinations(s, n))
 
+## Organise face list
+def get_edges_path(path):
+  edges = []
+  for i in range(len(path)):
+    e = tuple([path[i-1], path[i]])
+    edges.append(e)
+    edges.append(e[::-1])
+  return set(edges)
+
+def adjacent_face(f1, f2):
+  faceA = get_edges_path(f1)
+  faceB = get_edges_path(f2)
+  #print("faces:", faceA, faceB)
+  inter = faceA.intersection(faceB)
+  if len(inter) > 1:
+    return True, inter
+
+  return False, set()
+
+def sort_faces(face_list, source, sink):
+  source_sink = [f for f in face_list if len(f) == 3 and source in f and sink in f]
+  ordered_face = [[] for f in face_list]
+  ordered_face[0] = source_sink[0]
+  ordered_face[-1] = source_sink[-1]
+  face_index_list = [i for i in range(len([f for f in face_list])) if face_list[i] not in ordered_face]
+  #print(ordered_face)
+  possibilities = list(itertools.permutations(face_index_list))
+  filtered_poss = []
+  #print(len(possibilities), possibilities)
+  face_at_start_found = -1
+  face_at_end_found = -1
+  tried = [[] for f in ordered_face]
+  
+  best = []
+  valid_poss = []
+  count = 0
+  for perm in possibilities:
+    #print(count)
+    count += 1
+    curent_index = 0
+    temp_order = [f for f in ordered_face]
+    for k in perm:
+      #print(perm, perm[1:-1])
+      #break
+      if k not in tried[curent_index]: tried[curent_index].append(k)
+      are_adj, inter = adjacent_face(temp_order[curent_index], face_list[k])
+      if are_adj == False:
+        #print(curent_index, k) 
+        #print(perm, temp_order)
+        #print(temp_order[curent_index], face_list[k])
+        break
+      else: 
+        temp_order[curent_index+1] = face_list[k]
+        curent_index += 1
+    if sum([len(v) for v in temp_order]) >= sum([len(v) for v in best]):
+      best = temp_order
+    if [] not in temp_order:
+      #print(perm)
+      ordered_face = temp_order
+      #valid_poss.append(perm)
+      break
+  #print(valid_poss)
+  #print(best)
+  #print(tried)
+  #print(face_at_start_found, face_at_end_found)
+  #print(ordered_face)
+  #print(len(valid_poss),valid_poss)
+  return ordered_face
+
 ##Biconnect
 
 def setBlockAttr(G):

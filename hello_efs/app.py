@@ -1,6 +1,8 @@
 import base64
+from botocore.client import Config
 import boto3
 import json
+import logging
 import os
 import tempfile
 os.environ['MPLCONFIGDIR'] = tempfile.mkdtemp()
@@ -136,46 +138,32 @@ def create_dict_rel(REL_G, T1, T2):
 
 
 def create_face_dict(T1_faces, T2_faces):
-    faces = {"T1": {}, "T2": {}}
-    i = 1
-    while i < len(T1_faces) - 1:
-        for face in sorted(T1_faces, key=len):
-            # print(i)
-            if len(face) == 3 and 'w' in face:
-                faces["T1"][tuple(face)] = 0
-                faces["T1"][0] = tuple(face)
-            elif len(face) == 3 and 'e' in face:
-                faces["T1"][tuple(face)] = len(T1_faces) - 1
-                faces["T1"][len(T1_faces) - 1] = tuple(face)
-            else:
-                #inter = set(list(faces["T1"].keys())[list(faces["T1"].values()).index(i-1)]).intersection(set(face))
-                # if len(inter) >= 2 and tuple(face) not in faces["T1"]:
-                ##print(face, faces["T1"][i-1])
-                faces["T1"][tuple(face)] = i
-                faces["T1"][i] = tuple(face)
-                i += 1
-                # break
+    faces = {"T1":{}, "T2":{}}
+    #print("before:", T1_faces)
+    T1_faces = sort_faces(T1_faces, 's', 'n')
+    #print("after:", T1_faces)
+    #print("before:", T2_faces)
+    T2_faces = sort_faces(T2_faces, 'w', 'e')
+    #print("after:", T2_faces)
 
-    i = 1
-    while i < len(T2_faces) - 1:
-        if i == 6:
-            break
-        for face in sorted(T2_faces, key=len):
-            # print(i)
-            if len(face) == 3 and 's' in face:
-                faces["T2"][tuple(face)] = 0
-                faces["T2"][0] = tuple(face)
-            elif len(face) == 3 and 'n' in face:
-                faces["T2"][tuple(face)] = len(T2_faces) - 1
-                faces["T2"][len(T2_faces) - 1] = tuple(face)
-            else:
-                #inter = set(list(faces["T2"].keys())[list(faces["T2"].values()).index(i-1)]).intersection(set(face))
-                # if len(inter) >= 2: #print(face, faces["T2"][i-1])
-                # if len(inter) >= 2 and tuple(face) not in faces["T2"]:
-                ##print(face, faces["T2"][i-1])
-                faces["T2"][tuple(face)] = i
-                faces["T2"][i] = tuple(face)
-                i += 1
+    i = 0
+    if 'e' in T1_faces[0] : T1_faces = T1_faces[::-1]
+    for face in T1_faces:
+        faces["T1"][tuple(face)] = i
+        #faces["T1"][i] = tuple(face)
+        i += 1
+        #break
+
+    i = 0
+    if 'n' in T2_faces[0] : T2_faces = T2_faces[::-1]
+    for face in T2_faces:
+        faces["T2"][tuple(face)] = i
+        #faces["T2"][i] = tuple(face)
+        i += 1
+    #print()
+    #print(faces["T1"])
+    #print()
+    #print(faces["T2"])
     return faces
 
 
@@ -389,12 +377,126 @@ def create_plan(input_graph_data):
     return plan, image_data
 
 
-s3 = boto3.client('s3')
+
+def upload_file(file_name, bucket, object_name=None):
+    """Upload a file to an S3 bucket
+    
+    :param file_name: File to upload
+    :param bucket: Bucket to upload to
+    :param object_name: S3 object name. If not specified then file_name is used
+    :return: True if file was uploaded, else False
+    """
+    
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = os.path.basename(file_name)
+    try:
+        config = Config(connect_timeout=5, retries={'max_attempts': 0})
+        # Upload the file
+        s3_client = boto3.client('s3', config=config)
+    except Exception as e:
+        logging.error(e)
+        return "could not connect to client " + str(e)
+        
+    try:
+        response = s3_client.upload_file(file_name, bucket, object_name)
+    except Exception as e:
+        logging.error(e)
+        return False
+    return True
+
+def upload_to_aws(local_file, s3_file):
+    s3 = boto3.client('s3')
+    #s3 = boto3.resource('s3') 
+    try:
+        image_name = 'plan.png'
+        session = boto3.Session()
+        config = Config(connect_timeout=5, retries={'max_attempts': 0})
+        s3_client = session.client('s3', config=config)
+        s3 = session.resource('s3', config=config)
+        #buckets = []
+        buck = s3.Bucket('maket-generatedcontent')
+        img_data = open(local_file, "rb")
+        buck.put_object(Key=image_name, Body=img_data, ContentType="image/png", ACL="public-read")
+        #s3.put_object(Key=image_name, Bucket='maket-generatedcontent', Body=img_data, ContentType="image/png", ACL="public-read")
+        
+        # Generate the URL to get 'key-name' from 'bucket-name'
+        url = "http://" + "maket-generatedcontent" + ".s3.amazonaws.com/" + image_name
+
+        
+        '''try:
+        response = s3.upload_file(local_file, 'maket-generatedcontent', s3_file)
+        except ClientError as e:
+            #logging.error(e)
+            return "Client error " + str(e)
+        url = s3.generate_presigned_url(
+            ClientMethod='get_object',
+            Params={
+                'Bucket': 'maket-generatedcontent',
+                'Key': s3_file
+            },
+            ExpiresIn=24 * 3600
+        )'''
+    
+        print("Upload Successful", url)
+        return "Upload Successful " + url
+    except FileNotFoundError:
+        print("The file was not found")
+        return "File not found"
+    except Exception as e:
+        print("Something is wrong")
+        return "Something is wrong " + str(e)
+
+
+s3 = boto3.resource(u's3')
+bucket = s3.Bucket(u'maket-generatedcontent')
 
 def lambda_handler(event, context):
-    # test create plan
     image_path, room_pos = create_plan(test_input)
-    s3.upload_file(image_path, "maket-generatedcontent", "userData/2022-07-07/jessen/21:15:00/plan.png")
+    result_upload = upload_file(image_path, 'maket-generatedcontent', object_name='generated_image.png')
+    #result_upload = upload_to_aws(image_path, 'generated_image.png')
+    #APPROACH 1
+    '''print("started")
+    key = event['generated_image.png']
+    data = event['img64']
+    data1 = data
+    img = base64.b64decode(data1) 
+    with open(image_path, 'wb') as data:
+        data.write(img)
+        bucket.upload_file(image_path, 'generated_image.png')
+    print("finished")'''
+    session = boto3.Session()
+    config = Config(connect_timeout=5, retries={'max_attempts': 0})
+    s3_client = session.client('s3', config=config)
+    
+    #s3 = boto3.client('s3', config=config)
+    #buck = s3.Bucket('maket-generatedcontent')
+    s3 = session.resource('s3', config=config)
+    buckets = []
+    #buck = s3.Bucket('maket-generatedcontent')
+    #buckets = list(s3.buckets.limit(12))#s3.get_available_subresources()
+    #buckets = [bucket.name for bucket in s3.buckets.all()]
+    
+    
+    # APPROACH 2 
+    #write image to user specific s3 container
+    # day = str(date.today())
+    # now = datetime.datetime.now().replace(second=0, microsecond=0)
+    # path = "userData/" + day + "/" + event["queryStringParameters"]["sender"] + "/" + str(now.time()) + "/" + "generated_image.png"
+    # print("writing")
+    # s3.upload_file(image_path, "maket-generatedcontent", path)
+    # output = "https://maket-generatedcontent.s3.ca-central-1.amazonaws.com/" + path
+    return {'body':  json.dumps({'headers': {"Content-Type": "application/json"},
+                                 'statusCode': 200,
+                                 'output': "done",
+                                 's3_res': result_upload,
+                                 'Bucket': buckets,
+                                 'upload_outcome': result_upload
+                                 }),
+            }
+    # test create plan
+    #image_path, room_pos = create_plan(test_input)
+    #s3.upload_file(image_path, "maket-generatedcontent", "userData/2022-07-07/jessen/21:15:00/plan.png")
 
     #s3 = boto3.resource("s3")
     #s3.meta.client.upload_file(image_path, "maket-generatedcontent", "plan.png")
@@ -413,14 +515,14 @@ def lambda_handler(event, context):
     #bucket.put_object(Body=image_data, ContentType='image/png', Key="userData/2022-07-07/jessen/21:15:00/plan.png")
 
     #image = response["Body"].read()
-    return {
-        "headers": {"Content-Type": "image/png"},
-        "statusCode": 200, #"body": base64.b64encode(image).decode("utf-8"),
-        "isBase64Encoded": True,
-        "image_size" : os.path.getsize(image_path),
-        "rooms_position": room_pos,
-        "image_filename" : image_path
-    }
+    # return {
+    #     "headers": {"Content-Type": "image/png"},
+    #     "statusCode": 200, #"body": base64.b64encode(image).decode("utf-8"),
+    #     "isBase64Encoded": True,
+    #     "image_size" : os.path.getsize(image_path),
+    #     "rooms_position": room_pos,
+    #     "image_filename" : image_path
+    # }
     # else:
     #     # write image to user specific s3 container
     #     day = str(date.today())
@@ -440,4 +542,3 @@ def lambda_handler(event, context):
 
 #print(os.environ['MPLCONFIGDIR'])
 #fn, numpy_image = create_plan(test_input)
-
