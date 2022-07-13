@@ -2,29 +2,10 @@ from functions import *
 from triangulation import *
 import networkx as nx
 
-from biconnect import biconnect_augment_G
+
 #Triangulation, remove ST, remove extra CIPs
 
 ## Triangulation
-
-triang_G, added_edges_triang = triangulate_MCSM(biconnect_augment_G, randomized=False, reduce_graph=False)["H"]
-
-#[('8', '5')]
-added_edges_triang 
-
-pos = {"1":[-2,0], "2":[-1,0.5], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1,0], "10": [1.5,-1], "11": [0.5,-0.5], "12": [0.2,0.5],
-       "13": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-#nx.draw(triang_G, pos, with_labels=True)
-
-is_planar, embedding = nx.check_planarity(triang_G, counterexample=False)
-#print(is_planar)
-
-##Remove ST
-
-triang_G.has_edge("1","3")
-
-triang_G.has_edge("3","1")
 
 def form_cycle(G, node_list):
   for j in range(len(node_list)):
@@ -169,95 +150,3 @@ def edge_use_cycle(G, e):
       my_cycles.append(c)
   return [e, my_cycles]
 
-
-unsorted_cycles = [c for c in list(nx.simple_cycles(triang_G.copy().to_directed())) if len(c) == 3]
-all_elementary_cycles = []
-for c in unsorted_cycles:
-  triangle = list(set(c))
-  if triangle not in all_elementary_cycles:
-    all_elementary_cycles.append(triangle)
-#print(len(all_elementary_cycles), len(unsorted_cycles))
-sorted(all_elementary_cycles)
-
-all_faces(triang_G)
-
-detect_ST(triang_G)
-
-pos = {"1":[-2,0], "2":[-1,0.5], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1,0], "10": [1.5,-1], "11": [0.5,-0.5], "12": [0.2,0.5],
-       "13": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-#nx.draw(triang_G, pos, with_labels=True)
-
-list(triang_G.neighbors("2"))
-
-added_nodes_ST = []
-
-# we can loop the process to remove multiple ST
-noST_G = triang_G.copy()
-c = 0
-while has_ST(noST_G) == True:
-  #sphinx = findST(noST_G)
-  sphinx = detect_ST(noST_G)
-  #print("NON PY")
-  #print("PYR:",find_non_pyramid_ST(noST_G))
-  if len(sphinx) == 0:
-    sphinx = find_non_pyramid_ST(noST_G)[0]
-    top, edge, extra_points = sphinx
-  else:
-    sphinx = sphinx[0]
-    top, base = sphinx
-    edge, extra_points = choose_random_edge_from_path(noST_G, base, top=[top])
-  #print("****pyramid:",sphinx)
-  #noST_G = removeST(noST_G, sphinx)
-  
-  #break
-  #top, base = sphinx
-  #edge, extra_points = choose_random_edge_from_path(noST_G, base, top=[top])
-  pointA, pointB = edge
-  sep_triangle = [top, pointA, pointB, extra_points]
-  noST_G, added_node = remove_ST(noST_G, sep_triangle)
-  added_nodes_ST.append([added_node, edge])
-  #print("**DONE** \n")
-  #print("hasST? ", has_ST(noST_G))
-  #print(detect_ST(noST_G))
-  #print(find_non_pyramid_ST(noST_G))
-  #print()
-  #if c == 1: break
-  #print("*************C***********", c)
-  c +=1
-# (2,3) or (3,2) give the same result as the paper
-
-#['3', ['1', '2', '4', '5', '8']]
-#'8', '4', '5'
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [0.2,0.5],
-       "13": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-#nx.draw(noST_G, pos, with_labels=True)
-
-is_planar, embedding = nx.check_planarity(noST_G, counterexample=False)
-#print(is_planar)
-
-##Remove CIPs
-
-_, outer_Boundary, _, _ = find_inner_outer(noST_G)
-cip = find_all_CIP(noST_G)
-
-new_G = noST_G.copy()
-while len(cip) > 4:
-  # remove a shortcut
-  shortcut = random.choice(find_shortcuts(noST_G)[0])
-  #print(shortcut)
-  new_G = remove_shortcut(noST_G.copy(), shortcut)
-  cip = find_all_CIP(new_G)
-  
-
-pos = {"1":[-2,0], "2":[-1,0.4], "3":[0,0], "4":[-1,1], "5":[1,0], "6":[1,-1], "7":[1.5, -2], 
-       "8":[0.5,-2], "9":[-1.5,0.6], "10": [1,-2], "11": [0.5,-0.5], "12": [0.2,0.5],
-       "13": [0.1,-1], "n": [0.2,2],"e": [3,-2],"s": [-1,-3],"w": [-3,0]}
-#nx.draw(new_G, pos, with_labels=True)
-
-is_planar, _ = nx.check_planarity(new_G, counterexample=False)
-#print(is_planar)
-
-nx.is_chordal(new_G)

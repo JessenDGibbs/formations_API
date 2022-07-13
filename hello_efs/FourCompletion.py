@@ -1,8 +1,6 @@
 #Algorithm 3 : Four completion
 import networkx as nx
 from functions import *
-from transform import PTP_G
-from test_input import G
 
 
 

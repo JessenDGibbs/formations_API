@@ -1,7 +1,5 @@
 #Functions
 import networkx as nx
-from os import remove
-#import numpy as np
 import random
 import itertools
 
