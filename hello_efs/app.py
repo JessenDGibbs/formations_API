@@ -1,7 +1,10 @@
-import base64
-from botocore.client import Config
-import boto3
 import json
+import base64
+import boto3
+import random
+from datetime import date
+import datetime
+from botocore.client import Config
 import logging
 import os
 import tempfile
@@ -10,10 +13,10 @@ from datetime import date
 import datetime
 from pathlib import Path
 import networkx as nx
-import random
 import io
 #from PIL import Image
 from test_input import test_input_graph_data as test_input
+#import geos
 #from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
 from functions import *
@@ -23,6 +26,9 @@ from FourCompletion import add_nesw_vertices
 from triangulation import triangulate_MCSM
 from triang_ST_cip import find_non_pyramid_ST, detect_ST, choose_random_edge_from_path, remove_ST
 from Visualize_dual_rel import dict_room_color
+from Visualization import *
+
+s3 = boto3.client('s3')
 
 
 def remove_extra_cip(G):
@@ -196,10 +202,8 @@ def define_T1_faces(dict_rel, T1):
             T1_faces.append(final_face)
 
     edge = ('s', 'n')
-    dict_rel["T1"][edge[0]][edge[1]
-                            ]["right"] = dict_rel["T1"]['s']['w']["left"]
-    dict_rel["T1"][edge[0]][edge[1]
-                            ]["left"] = dict_rel["T1"]['s']['e']["right"]
+    dict_rel["T1"][edge[0]][edge[1]]["right"] = dict_rel["T1"]['s']['w']["left"]
+    dict_rel["T1"][edge[0]][edge[1]]["left"] = dict_rel["T1"]['s']['e']["right"]
     return T1_faces
 
 
@@ -277,8 +281,76 @@ def create_polygon_dict(room_list):
         your_dict[i] = sublist #Polygon(sublist)
     return your_dict
 
+def save_plan_image(G, your_dict, added_nodes_ST, sorted_lines, side_to_annotate, test=True):
+    scale = 10
+    fig, axs = plt.subplots(figsize=(10,10))
+    axs.set_aspect('equal', 'datalim')
+    added_nodes_ST_clean = [edge[0] for edge in added_nodes_ST]
 
-def create_plan_image(your_dict):
+    for key,geom in your_dict.items(): 
+        xs, ys = [coord[0]*scale for coord in geom], [coord[1]*scale for coord in geom] 
+        room_to_append = []
+        og_room = key + 1
+        key_name = key + 1
+        #print("k:", key)
+        if key > len(list(G.nodes))-1: 
+            if str(key+1) in added_nodes_ST_clean:
+                for node_info in added_nodes_ST:
+                    if str(key+1) == node_info[0]:
+                        room_to_append = [r for r in node_info[1]]
+                        index_room = random.randint(0, len(room_to_append)-1)
+                        key = int(room_to_append[index_room])
+                        print(og_room, index_room)
+                        key_name = key
+                        break
+                else:
+                    key = 'extra' 
+        else: key = key + 1 
+        if key != 'extra':
+            color = dict_room_color[str(key)]
+            c = [col/255 for col in list(color)]
+            if key == 'extra': c = [0.8,0.8,0.8]
+            #print(color, c) 
+            axs.fill(xs, ys, alpha=0.5, fc=list(c))
+            #print(xs, ys)
+            axs.text(xs[0]+0.1, ys[0]+0.1, key_name ,fontsize='medium', va='bottom', fontfamily='serif')
+            for side in scale_lines(side_to_annotate[str(og_room)], scale):
+                annotate_dim(axs,side[0],side[1])
+
+    #print(sorted_lines)
+    lines = scale_lines(sorted_lines, scale)
+    #print(lines)
+
+    c = [(0,0,0) for line in lines]
+
+    lc = mc.LineCollection(lines, colors=c, linewidths=2)
+    axs.add_collection(lc)
+
+    plt.axis('off')
+    if test == False:
+        # save image as byte object
+        img_bytes = io.BytesIO()
+        plt.savefig(img_bytes, format='png')
+        img_bytes.seek(0)
+        # you will have to fetch the image from this bucket wherever you need th image data/path in other functions
+        day = str(date.today())
+        now = datetime.datetime.now()
+        path = "output/" + day + "/" + str(now.time()) + "/" + "generated_image.png"
+        s3.upload_fileobj(img_bytes, "plan-output-temp", path)
+        resource = boto3.resource("s3")
+        object = resource.Object("plan-output-temp", path)
+        object.copy_from(CopySource={'Bucket': "plan-output-temp",
+                                'Key': path},
+                    MetadataDirective="REPLACE",
+                    ContentType="image")
+    else:
+        num = random.randint(0,2000)
+        plt.savefig('test_'+str(num)+".png")
+        
+    return path
+
+
+def create_plan_image(your_dict, test=True):
     #return "plan created", your_dict
     fig, axs = plt.subplots()
     axs.set_aspect('equal', 'datalim')
@@ -304,29 +376,39 @@ def create_plan_image(your_dict):
         axs.text(xs[0]+0.1, ys[0]+0.1, key_name, fontsize='medium',
                  va='bottom', fontfamily='serif')
     plt.axis('off')
-    image_path = os.environ['MPLCONFIGDIR'] + '/plan.png'
-    plt.savefig(image_path)
-    #plt.show()
-    #path = 'plan.png'
+    #image_path = os.environ['MPLCONFIGDIR'] + '/plan.png'
+    #plt.savefig(image_path)
+    
+    #saving image to an alternative s3 bucket
+    
+    if test == False:
+        # save image as byte object
+        img_bytes = io.BytesIO()
+        plt.savefig(img_bytes, format='png')
+        img_bytes.seek(0)
+        # you will have to fetch the image from this bucket wherever you need th image data/path in other functions
+        day = str(date.today())
+        now = datetime.datetime.now()
+        path = "output/" + day + "/" + str(now.time()) + "/" + "generated_image.png"
+        s3.upload_fileobj(img_bytes, "plan-output-temp", path)
+        resource = boto3.resource("s3")
+        object = resource.Object("plan-output-temp", path)
+        object.copy_from(CopySource={'Bucket': "plan-output-temp",
+                                'Key': path},
+                    MetadataDirective="REPLACE",
+                    ContentType="image")
+    else:
+        num = random.randint(0,2000)
+        plt.savefig('test_'+str(num)+".png")
 
-    #img_data = io.BytesIO()
-    #plt.savefig(img_data, format='png')
-    #img_data.seek(0)
-
-    #plt.savefig('plan.png')
-
-    #img = Image.open(path)
-
-    #numpydata = np.asarray(img)
-
-    return image_path, your_dict
+    return path, your_dict
 
 
 def create_plan(input_graph_data):
     G = nx.Graph()  # create empty grpah
     # add nodes from the rooms dictionary
-    G.add_nodes_from([(str(key), input_graph_data[key])
-                      for key in input_graph_data if key != 'adjs'])
+    G.add_nodes_from([(str(input_graph_data[key]["adj_ref"]), input_graph_data[key])
+                      for key in input_graph_data if key not in ['adjs', "land", "envelope"]])
     adjacencies = [[str(p[0]), str(p[1])] for p in input_graph_data['adjs']]
     G.add_edges_from(adjacencies)
 
@@ -368,173 +450,40 @@ def create_plan(input_graph_data):
     room_coord_list = create_room_coord_list(G, rel_G, dict_rel)
     polygon_dict = create_polygon_dict(room_coord_list)
 
-    plan, image_data = create_plan_image(polygon_dict)
+    bucket_path, image_data = create_plan_image(polygon_dict)
 
-    return plan, image_data
+    sorted_lines = get_outside_lines()
 
+    bucket_path = save_plan_image(G, image_data, added_nodes_ST, sorted_lines, side_to_annotate, test=False)
 
-
-def upload_file(file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
-    
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
-    
-    # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = os.path.basename(file_name)
-    try:
-        config = Config(connect_timeout=5, retries={'max_attempts': 0})
-        # Upload the file
-        s3_client = boto3.client('s3', config=config)
-    except Exception as e:
-        logging.error(e)
-        return "could not connect to client " + str(e)
-        
-    try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
-    except Exception as e:
-        logging.error(e)
-        return False
-    return True
-
-def upload_to_aws(local_file, s3_file):
-    s3 = boto3.client('s3')
-    #s3 = boto3.resource('s3') 
-    try:
-        image_name = 'plan.png'
-        session = boto3.Session()
-        config = Config(connect_timeout=5, retries={'max_attempts': 0})
-        s3_client = session.client('s3', config=config)
-        s3 = session.resource('s3', config=config)
-        #buckets = []
-        buck = s3.Bucket('maket-generatedcontent')
-        img_data = open(local_file, "rb")
-        buck.put_object(Key=image_name, Body=img_data, ContentType="image/png", ACL="public-read")
-        #s3.put_object(Key=image_name, Bucket='maket-generatedcontent', Body=img_data, ContentType="image/png", ACL="public-read")
-        
-        # Generate the URL to get 'key-name' from 'bucket-name'
-        url = "http://" + "maket-generatedcontent" + ".s3.amazonaws.com/" + image_name
-
-        
-        '''try:
-        response = s3.upload_file(local_file, 'maket-generatedcontent', s3_file)
-        except ClientError as e:
-            #logging.error(e)
-            return "Client error " + str(e)
-        url = s3.generate_presigned_url(
-            ClientMethod='get_object',
-            Params={
-                'Bucket': 'maket-generatedcontent',
-                'Key': s3_file
-            },
-            ExpiresIn=24 * 3600
-        )'''
-    
-        print("Upload Successful", url)
-        return "Upload Successful " + url
-    except FileNotFoundError:
-        print("The file was not found")
-        return "File not found"
-    except Exception as e:
-        print("Something is wrong")
-        return "Something is wrong " + str(e)
+    return bucket_path, image_data, 
 
 
-s3 = boto3.resource(u's3')
-bucket = s3.Bucket(u'maket-generatedcontent')
+s3 = boto3.client('s3')
 
 def lambda_handler(event, context):
-    image_path, room_pos = create_plan(test_input)
-    result_upload = upload_file(image_path, 'maket-generatedcontent', object_name='generated_image.png')
-    #result_upload = upload_to_aws(image_path, 'generated_image.png')
-    #APPROACH 1
-    '''print("started")
-    key = event['generated_image.png']
-    data = event['img64']
-    data1 = data
-    img = base64.b64decode(data1) 
-    with open(image_path, 'wb') as data:
-        data.write(img)
-        bucket.upload_file(image_path, 'generated_image.png')
-    print("finished")'''
-    session = boto3.Session()
-    config = Config(connect_timeout=5, retries={'max_attempts': 0})
-    s3_client = session.client('s3', config=config)
-    
-    #s3 = boto3.client('s3', config=config)
-    #buck = s3.Bucket('maket-generatedcontent')
-    s3 = session.resource('s3', config=config)
-    buckets = []
-    #buck = s3.Bucket('maket-generatedcontent')
-    #buckets = list(s3.buckets.limit(12))#s3.get_available_subresources()
-    #buckets = [bucket.name for bucket in s3.buckets.all()]
-    
-    
-    # APPROACH 2 
-    #write image to user specific s3 container
-    # day = str(date.today())
-    # now = datetime.datetime.now().replace(second=0, microsecond=0)
-    # path = "userData/" + day + "/" + event["queryStringParameters"]["sender"] + "/" + str(now.time()) + "/" + "generated_image.png"
-    # print("writing")
-    # s3.upload_file(image_path, "maket-generatedcontent", path)
-    # output = "https://maket-generatedcontent.s3.ca-central-1.amazonaws.com/" + path
-    return {'body':  json.dumps({'headers': {"Content-Type": "application/json"},
-                                 'statusCode': 200,
-                                 'output': "done",
-                                 's3_res': result_upload,
-                                 'Bucket': buckets,
-                                 'upload_outcome': result_upload
-                                 }),
-            }
-    # test create plan
-    #image_path, room_pos = create_plan(test_input)
-    #s3.upload_file(image_path, "maket-generatedcontent", "userData/2022-07-07/jessen/21:15:00/plan.png")
+    designs = []
+    bucket_path, room_pos = create_plan(event["userData"]["constraints"]["1"])
+    day = str(date.today())
+    now = datetime.datetime.now().replace(second=0, microsecond=0)
+    path = "userData/" + day + "/" + event["userData"]["userID"] + "/" + str(now.time()) + "/" + "generated_image.png"
+    #s3.upload_file(image_path, "maket-generatedcontent", path)
+    #output = "https://maket-generatedcontent.s3.ca-central-1.amazonaws.com/" + path
+    #designs.append(output)
+    #designs.append(output)
+    s3.copy({"Bucket": "plan-output-temp", "Key": bucket_path}, "maket-generatedcontent", path)
+    output = "https://maket-generatedcontent.s3.ca-central-1.amazonaws.com/" + path
+    designs.append(output)
+    designs.append(output)
+    designs.append(output)
+    designs.append(output)
+    designs.append(output)
+    designs.append(output)
+    return {
+        'statusCode': 200,
+        'userData': event["userData"]["userID"],
+        'designs': designs
+    }
 
-    #s3 = boto3.resource("s3")
-    #s3.meta.client.upload_file(image_path, "maket-generatedcontent", "plan.png")
-    #s3.upload_file(image_path, "maket-generatedcontent", "userData/2022-07-07/jessen/21:15:00/plan.png")
-    
-    # if event[“queryStringParameters”][“sender”] == “0”:
-    '''response = s3.get_object(
-        Bucket="maket-generatedcontent",
-        Key="userData/2022-07-07/jessen/21:15:00/2D_design.png",
-    )'''
 
-    ## Save image to s3 bucket
-    #image_data.seek(0)
-    #s3 = boto3.resource('s3')
-    #bucket = s3.Bucket(response.Bucket)
-    #bucket.put_object(Body=image_data, ContentType='image/png', Key="userData/2022-07-07/jessen/21:15:00/plan.png")
-
-    #image = response["Body"].read()
-    # return {
-    #     "headers": {"Content-Type": "image/png"},
-    #     "statusCode": 200, #"body": base64.b64encode(image).decode("utf-8"),
-    #     "isBase64Encoded": True,
-    #     "image_size" : os.path.getsize(image_path),
-    #     "rooms_position": room_pos,
-    #     "image_filename" : image_path
-    # }
-    # else:
-    #     # write image to user specific s3 container
-    #     day = str(date.today())
-    #     now = datetime.datetime.now().replace(second=0, microsecond=0)
-    #     path = “userData/” + day + “/” + \
-    #         event[“queryStringParameters”][“sender”] + “/” + \
-    #         str(now.time()) + “/” + “generated_image.png”
-    #     s3.upload_file(“./2D_design.png”, “maket-generatedcontent”, path)
-    #     output = “https://maket-generatedcontent.s3.ca-central-1.amazonaws.com/” + path
-    #     return {
-    #         ‘body’:  json.dumps({
-    #             ‘headers’: {“Content-Type”: “application/json”},
-    #             ‘statusCode’: 200,
-    #             “output”: output
-    #         }),
-    #     }
-
-print(os.environ['MPLCONFIGDIR'])
-fn, numpy_image = create_plan(test_input)
+bucket_path, room_pos = create_plan(test_input["userData"]["constraints"]["1"])

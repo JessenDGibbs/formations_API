@@ -89,6 +89,7 @@ def choose_random_edge_from_path(G, path, top=[]):
     path = nodes_by_deg[0:3]
     #return [(0,0), []]
   #else:
+  #print(path, len(path))
   points = path + top
   min = [10, (path[0], path[1])]
   tries = 3
